@@ -74,19 +74,6 @@ def get_pipeline(image_key) {
                 \""""
             }
 
-
-
-            stage("${image_key}: Archive") {
-                sh """docker exec ${container_name} sh -c \"
-                    tar czvf ${project}_pkg.tar.gz ${project}_pkg
-                \""""
-
-                // Copy files from container.
-                sh "docker cp ${container_name}:/home/jenkins/PACKAGE_NAME ./PACKAGE_NAME-${image_key}"
-                sh "docker cp ${container_name}:/home/jenkins/${project}_pkg.tar.gz ./${project}_pkg-${image_key}.tar.gz"
-
-                archiveArtifacts "PACKAGE_NAME-${image_key},${project}_pkg-${image_key}.tar.gz"
-            }
         } finally {
             sh "docker stop ${container_name}"
             sh "docker rm -f ${container_name}"
@@ -100,18 +87,6 @@ node('docker') {
     // Delete workspace when build is done
     cleanWs()
 
-    stage('Get Commit') {
-        step([
-            $class: 'CopyArtifact',
-            filter: 'GIT_COMMIT',
-            fingerprintArtifacts: true,
-            projectName: 'ess-dmsc/h5cpp/master',
-            target: 'artifacts'
-        ])
-        conan_pkg_commit = sh script: 'cat artifacts/GIT_COMMIT',
-            returnStdout: true
-    }
-
     dir("${project}") {
         stage('Checkout') {
             scm_vars = checkout scm
@@ -124,8 +99,4 @@ node('docker') {
     }
     parallel builders
 
-    // Archive CentOS artefacts with old name for compatibility
-    sh "cp PACKAGE_NAME-centos PACKAGE_NAME"
-    sh "cp ${project}_pkg-centos.tar.gz ${project}_pkg.tar.gz"
-    archiveArtifacts "PACKAGE_NAME,${project}_pkg.tar.gz"
 }
