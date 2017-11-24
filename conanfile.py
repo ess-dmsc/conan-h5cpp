@@ -56,11 +56,11 @@ class H5cppConan(ConanFile):
         )
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="h5cpp/build/install/include")
+        self.copy("*.hpp", dst="include", src="h5cpp/build/install")
         if self.settings.os == "Macos":
-            self.copy("*.dylib*", dst="lib", src="h5cpp/build/install/lib", keep_path=False)
+            self.copy("*.dylib*", dst="lib", src="h5cpp/build/install", keep_path=False)
         else:
-            self.copy("*.so*", dst="lib", src="h5cpp/build/install/lib", keep_path=False)
+            self.copy("*.so*", dst="lib", src="h5cpp/build/install", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
         self.copy("LICENSE.*", src="h5cpp")
 
