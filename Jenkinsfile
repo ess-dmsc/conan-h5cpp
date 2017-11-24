@@ -3,11 +3,18 @@ project = "conan-h5cpp"
 conan_remote = "ess-dmsc-local"
 conan_user = "ess-dmsc"
 conan_pkg_channel = "testing"
-conan_pkg_version = "master"
 
 images = [
+    'centos': [
+        'name': 'essdmscdm/centos-build-node:0.9.1',
+        'sh': 'sh'
+    ],
+    'centos-gcc6': [
+        'name': 'essdmscdm/centos-gcc6-build-node:0.3.1',
+        'sh': '/usr/bin/scl enable rh-python35 devtoolset-6 -- /bin/bash'
+    ],
     'fedora': [
-        'name': 'essdmscdm/fedora-build-node:0.4.1',
+        'name': 'essdmscdm/fedora-build-node:0.4.2',
         'sh': 'sh'
     ]
 ]
@@ -57,23 +64,22 @@ def get_pipeline(image_key) {
 
             stage("${image_key}: Package") {
                 sh """docker exec ${container_name} ${custom_sh} -c \"
-                    make_conan_package.sh -k -d ${project}_pkg \
-                        ${project} \
-                        ${conan_pkg_version} \
-                        ${conan_pkg_commit}
+                    cd ${project}
+                    conan create ${conan_user}/${conan_pkg_channel} \
+                        --settings librdkafka:build_type=Release \
+                        --options librdkafka:shared=False \
+                        --build=missing \
                 \""""
             }
 
             stage("${image_key}: Upload") {
                 sh """docker exec ${container_name} ${custom_sh} -c \"
-                    upload_conan_package.sh -f PACKAGE_NAME \
-                        ${project}_pkg/conanfile.py \
+                    upload_conan_package.sh ${project}/conanfile.py \
                         ${conan_remote} \
                         ${conan_user} \
                         ${conan_pkg_channel}
                 \""""
             }
-
         } finally {
             sh "docker stop ${container_name}"
             sh "docker rm -f ${container_name}"
@@ -98,5 +104,4 @@ node('docker') {
         builders[image_key] = get_pipeline(image_key)
     }
     parallel builders
-
 }
