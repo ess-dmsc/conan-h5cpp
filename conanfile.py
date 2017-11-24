@@ -6,8 +6,8 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     name = "h5cpp"
-    version = "fe52beb"
-    license = "BSD 2-Clause"
+    version = "0.0.3"
+    license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
@@ -25,8 +25,7 @@ class H5cppConan(ConanFile):
     generators = "cmake"
 
     def source(self):
-        self.run("git clone -b master --single-branch https://github.com/ess-dmsc/h5cpp.git")
-        self.run("cd h5cpp && git checkout fe52bebe31fcca001b23c67b0e73043fe513691e")
+        self.run("git clone -b v0.0.3 --single-branch https://github.com/ess-dmsc/h5cpp.git")
 
     def build(self):
         files.mkdir("./h5cpp/build")
