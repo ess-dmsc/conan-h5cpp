@@ -64,4 +64,4 @@ class H5cppConan(ConanFile):
         self.copy("LICENSE.*", src="h5cpp")
 
     def package_info(self):
-        self.cpp_info.libs = ["h5cpp_shared"]
+        self.cpp_info.libs = ["h5cpp"]
