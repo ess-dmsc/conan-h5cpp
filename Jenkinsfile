@@ -82,10 +82,6 @@ def get_pipeline(image_key) {
           sh """docker exec ${container_name} ${custom_sh} -c \"
             cd ${project} && \
             conan create ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Debug \
-              --options h5cpp:shared=True \
-              --build=missing && \
-            conan create ${conan_user}/${conan_pkg_channel} \
               --settings h5cpp:build_type=Release \
               --options h5cpp:shared=True \
               --build=missing
@@ -134,10 +130,6 @@ def get_osx_pipeline() {
 
         stage("OSX: Package") {
           sh "conan create ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Debug \
-              --options h5cpp:shared=True \
-              --build=missing && \
-            conan create ${conan_user}/${conan_pkg_channel} \
               --settings h5cpp:build_type=Release \
               --options h5cpp:shared=True \
               --build=missing"
