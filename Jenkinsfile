@@ -17,20 +17,18 @@ images = [
         'name': 'essdmscdm/fedora-build-node:0.4.2',
         'sh': 'sh'
     ],
-/*
-  'debian': [
-    'name': 'essdmscdm/debian-build-node:0.1.1',
-    'sh': 'sh'
-  ],
-*/
+    'debian': [
+        'name': 'essdmscdm/debian-build-node:0.1.1',
+        'sh': 'sh'
+    ],
     'ubuntu1604': [
         'name': 'essdmscdm/ubuntu16.04-build-node:0.0.2',
         'sh': 'sh'
-  ],
-  'ubuntu1710': [
-    'name': 'essdmscdm/ubuntu17.10-build-node:0.0.3',
-    'sh': 'sh'
-  ]
+    ],
+    'ubuntu1710': [
+        'name': 'essdmscdm/ubuntu17.10-build-node:0.0.3',
+        'sh': 'sh'
+    ]
 ]
 
 base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
@@ -84,12 +82,12 @@ def get_pipeline(image_key) {
           sh """docker exec ${container_name} ${custom_sh} -c \"
             cd ${project} && \
             conan create ${conan_user}/${conan_pkg_channel} \
-              --settings FlatBuffers:build_type=Release \
-              --options FlatBuffers:shared=False \
+              --settings h5cpp:build_type=Debug \
+              --options h5cpp:shared=True \
               --build=missing && \
             conan create ${conan_user}/${conan_pkg_channel} \
-              --settings FlatBuffers:build_type=Release \
-              --options FlatBuffers:shared=True \
+              --settings h5cpp:build_type=Release \
+              --options h5cpp:shared=True \
               --build=missing
           \""""
         }  // stage
@@ -106,6 +104,52 @@ def get_pipeline(image_key) {
         sh "docker stop ${container_name}"
         sh "docker rm -f ${container_name}"
       }  // finally
+    }  // node
+  }  // return
+}  // def
+
+def get_osx_pipeline() {
+  return {
+    node('macos') {
+      cleanWs()
+      dir("${project}") {
+        stage("OSX: Checkout") {
+          checkout scm
+        }  // stage
+
+        stage("OSX: Conan setup") {
+          withCredentials([
+            string(
+              credentialsId: 'local-conan-server-password',
+              variable: 'CONAN_PASSWORD'
+            )
+          ]) {
+            sh "conan user \
+                --password '${CONAN_PASSWORD}' \
+                --remote ${conan_remote} \
+                ${conan_user} \
+                > /dev/null"
+          }  // withCredentials
+        }  // stage
+
+        stage("OSX: Package") {
+          sh "conan create ${conan_user}/${conan_pkg_channel} \
+              --settings h5cpp:build_type=Debug \
+              --options h5cpp:shared=True \
+              --build=missing && \
+            conan create ${conan_user}/${conan_pkg_channel} \
+              --settings h5cpp:build_type=Release \
+              --options h5cpp:shared=True \
+              --build=missing"
+        }  // stage
+
+        stage("OSX: Upload") {
+          sh "upload_conan_package.sh conanfile.py \
+                ${conan_remote} \
+                ${conan_user} \
+                ${conan_pkg_channel}"
+        }
+      }
     }  // node
   }  // return
 }  // def
