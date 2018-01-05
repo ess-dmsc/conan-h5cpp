@@ -6,17 +6,15 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     name = "h5cpp"
-    version = "0.0.3"
+    version = "ct4"
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
+    description = "h5cpp wrapper"
+    options = {"shared": [True, False]}
     settings = "os", "compiler", "build_type", "arch"
-    requires = (
-        "Boost/1.62.0@ess-dmsc/stable",
-        "hdf5/1.10.1-dm1@ess-dmsc/stable",
-        "gtest/3121b20-dm1@ess-dmsc/testing"
-    )
-    build_requires = "cmake_installer/1.0@conan/stable"
+
     default_options = (
+        "shared=True",
         "Boost:shared=True",
         "hdf5:shared=True",
         "gtest:shared=True",
@@ -25,7 +23,7 @@ class H5cppConan(ConanFile):
     generators = "cmake"
 
     def source(self):
-        self.run("git clone -b v0.0.3 --single-branch https://github.com/ess-dmsc/h5cpp.git")
+        self.run("git clone -b test-conan --single-branch https://github.com/ess-dmsc/h5cpp.git")
 
     def build(self):
         files.mkdir("./h5cpp/build")
