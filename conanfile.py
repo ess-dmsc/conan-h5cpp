@@ -34,8 +34,6 @@ class H5cppConan(ConanFile):
         with tools.chdir("./h5cpp/build"):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
-            cmake.definitions["WITH_CONAN"] = "True"
-            cmake.definitions["CONAN_FILE"] = "conanfile_ess.txt"
 
             if tools.os_info.is_macos:
                 cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
