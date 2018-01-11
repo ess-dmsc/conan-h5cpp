@@ -16,14 +16,15 @@ class H5cppConan(ConanFile):
         "Boost/1.62.0@ess-dmsc/stable",
         "hdf5/1.10.1-dm1@ess-dmsc/stable",
         "gtest/3121b20-dm1@ess-dmsc/testing",
-        "cmake_installer/3.9.0@conan/stable"
+        "cmake_installer/1.0@conan/stable"
     )
 
     default_options = (
         "shared=True",
         "Boost:shared=True",
         "hdf5:shared=True",
-        "gtest:shared=True"
+        "gtest:shared=True",
+        "cmake_installer:version=3.9.0"
     )
     generators = "cmake"
 
