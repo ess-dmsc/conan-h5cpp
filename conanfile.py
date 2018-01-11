@@ -10,7 +10,6 @@ class H5cppConan(ConanFile):
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
-    options = {"shared": [True, False]}
     settings = "os", "compiler", "build_type", "arch"
     requires = (
         "Boost/1.62.0@ess-dmsc/stable",
@@ -20,7 +19,6 @@ class H5cppConan(ConanFile):
     )
 
     default_options = (
-        "shared=True",
         "Boost:shared=True",
         "hdf5:shared=True",
         "gtest:shared=True",
