@@ -6,15 +6,21 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     name = "h5cpp"
-    version = "ct4"
+    version = "packaging-test"
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
-    options = {"shared": [True, False]}
+    # options = {"shared": [True, False]}
     settings = "os", "compiler", "build_type", "arch"
+    requires = (
+        "Boost/1.62.0@ess-dmsc/stable",
+        "hdf5/1.10.1-dm1@ess-dmsc/stable",
+        "gtest/3121b20-dm1@ess-dmsc/testing",
+        "cmake_installer/1.0@conan/stable"
+    )
 
     default_options = (
-        "shared=True",
+        # "shared=True",
         "Boost:shared=True",
         "hdf5:shared=True",
         "gtest:shared=True",
@@ -23,7 +29,7 @@ class H5cppConan(ConanFile):
     generators = "cmake"
 
     def source(self):
-        self.run("git clone -b test-conan --single-branch https://github.com/ess-dmsc/h5cpp.git")
+        self.run("git clone -b master --single-branch https://github.com/ess-dmsc/h5cpp.git")
 
     def build(self):
         files.mkdir("./h5cpp/build")
@@ -53,7 +59,7 @@ class H5cppConan(ConanFile):
         )
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="h5cpp/build/install")
+        self.copy("*", dst="include", src="h5cpp/build/install/include")
         if self.settings.os == "Macos":
             self.copy("*.dylib*", dst="lib", src="h5cpp/build/install", keep_path=False)
         else:
