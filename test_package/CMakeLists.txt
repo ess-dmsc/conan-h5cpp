@@ -1,11 +1,14 @@
-project(PackageTest CXX)
+project(h5cpp-example LANGUAGES CXX C)
 cmake_minimum_required(VERSION 2.8.12)
+set(CMAKE_CXX_STANDARD 11)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(SKIP_RPATH)
 
-add_definitions(-std=c++11)
+find_package(h5cpp REQUIRED)
 
-add_executable(example example.cpp)
 find_library(H5CPP_LIB h5cpp)
 target_link_libraries(example ${H5CPP_LIB})
+
+#add_executable(example example.cpp)
+#target_link_libraries(example h5cpp_shared)
