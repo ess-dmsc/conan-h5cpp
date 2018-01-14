@@ -137,7 +137,9 @@ def get_osx_pipeline() {
         stage("OSX: Package") {
           sh "conan create ${conan_user}/${conan_pkg_channel} \
               --settings h5cpp:build_type=Release \
-              --options h5cpp:shared=True \
+              --build=missing"
+          sh "conan create ${conan_user}/${conan_pkg_channel} \
+              --settings h5cpp:build_type=Debug \
               --build=missing"
         }  // stage
 
