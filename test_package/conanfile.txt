@@ -1,13 +1,9 @@
 [requires]
 h5cpp/packaging-test@ess-dmsc/testing
-cmake_installer/1.0@conan/stable
 
 [generators]
 cmake
 virtualbuildenv
-
-[options]
-h5cpp:shared=True
 
 [imports]
 bin, cmake -> ./bin

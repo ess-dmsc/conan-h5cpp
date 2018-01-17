@@ -5,30 +5,30 @@ conan_user = "ess-dmsc"
 conan_pkg_channel = "testing"
 
 images = [
-    'centos': [
-        'name': 'essdmscdm/centos-build-node:0.9.4',
-        'sh': 'sh'
-    ],
-    'centos-gcc6': [
-        'name': 'essdmscdm/centos-gcc6-build-node:0.3.4',
-        'sh': '/usr/bin/scl enable rh-python35 devtoolset-6 -- /bin/bash'
-    ],
-    'fedora': [
-        'name': 'essdmscdm/fedora-build-node:0.4.2',
-        'sh': 'sh'
-    ],
-    'debian': [
-        'name': 'essdmscdm/debian-build-node:0.1.1',
-        'sh': 'sh'
-    ],
-    'ubuntu1604': [
-        'name': 'essdmscdm/ubuntu16.04-build-node:0.0.2',
-        'sh': 'sh'
-    ],
-    'ubuntu1710': [
-        'name': 'essdmscdm/ubuntu17.10-build-node:0.0.3',
-        'sh': 'sh'
-    ]
+  'centos7': [
+    'name': 'essdmscdm/centos7-build-node:1.0.1',
+    'sh': 'sh'
+  ],
+  'centos7-gcc6': [
+    'name': 'essdmscdm/centos7-gcc6-build-node:1.0.0',
+    'sh': '/usr/bin/scl enable rh-python35 devtoolset-6 -- /bin/bash'
+  ],
+  'debian9': [
+  'name': 'essdmscdm/debian9-build-node:1.0.0',
+  'sh': 'sh'
+  ],
+  'fedora25': [
+    'name': 'essdmscdm/fedora25-build-node:1.0.0',
+    'sh': 'sh'
+  ],
+  'ubuntu1604': [
+    'name': 'essdmscdm/ubuntu16.04-build-node:2.0.0',
+    'sh': 'sh'
+  ],
+  'ubuntu1710': [
+    'name': 'essdmscdm/ubuntu17.10-build-node:1.0.0',
+    'sh': 'sh'
+  ]
 ]
 
 base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
@@ -43,6 +43,8 @@ def get_pipeline(image_key) {
         def container = image.run("\
           --name ${container_name} \
           --tty \
+          --cpus=2 \
+          --memory=4GB \
           --network=host \
           --env http_proxy=${env.http_proxy} \
           --env https_proxy=${env.https_proxy} \
@@ -65,7 +67,7 @@ def get_pipeline(image_key) {
             )
           ]) {
             sh """docker exec ${container_name} ${custom_sh} -c \"
-              set +x && \
+              set +x
               conan remote add \
                 --insert 0 \
                 ${conan_remote} ${local_conan_server} && \
@@ -80,28 +82,28 @@ def get_pipeline(image_key) {
 
         stage("${image_key}: Package") {
           sh """docker exec ${container_name} ${custom_sh} -c \"
-            cd ${project} && \
-            conan create ${conan_user}/${conan_pkg_channel} \
+            cd ${project}
+            conan create . ${conan_user}/${conan_pkg_channel} \
               --settings h5cpp:build_type=Release \
-              --build=missing
+              --build=outdated
           \""""
 
           sh """docker exec ${container_name} ${custom_sh} -c \"
-            cd ${project} && \
-            conan create ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Debug \
-              --build=missing
+            cd ${project}
+            conan create . ${conan_user}/${conan_pkg_channel} \
+              --settings h5cpp:build_type=Release \
+              --build=outdated
           \""""
         }  // stage
 
         stage("${image_key}: Upload") {
           sh """docker exec ${container_name} ${custom_sh} -c \"
             upload_conan_package.sh ${project}/conanfile.py \
-                ${conan_remote} \
-                ${conan_user} \
-                ${conan_pkg_channel}
+              ${conan_remote} \
+              ${conan_user} \
+              ${conan_pkg_channel}
           \""""
-        }
+        }  // stage
       } finally {
         sh "docker stop ${container_name}"
         sh "docker rm -f ${container_name}"
@@ -110,16 +112,16 @@ def get_pipeline(image_key) {
   }  // return
 }  // def
 
-def get_osx_pipeline() {
+def get_macos_pipeline() {
   return {
     node('macos') {
       cleanWs()
       dir("${project}") {
-        stage("OSX: Checkout") {
+        stage("macOS: Checkout") {
           checkout scm
         }  // stage
 
-        stage("OSX: Conan setup") {
+        stage("macOS: Conan setup") {
           withCredentials([
             string(
               credentialsId: 'local-conan-server-password',
@@ -127,34 +129,35 @@ def get_osx_pipeline() {
             )
           ]) {
             sh "conan user \
-                --password '${CONAN_PASSWORD}' \
-                --remote ${conan_remote} \
-                ${conan_user} \
-                > /dev/null"
+              --password '${CONAN_PASSWORD}' \
+              --remote ${conan_remote} \
+              ${conan_user} \
+              > /dev/null"
           }  // withCredentials
         }  // stage
 
-        stage("OSX: Package") {
-          sh "conan create ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Release \
-              --build=missing"
-          sh "conan create ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Debug \
-              --build=missing"
+        stage("macOS: Package") {
+          sh "conan create . ${conan_user}/${conan_pkg_channel} \
+            --settings h5cpp:build_type=Release \
+            --build=outdated"
+
+          sh "conan create . ${conan_user}/${conan_pkg_channel} \
+            --settings h5cpp:build_type=Release \
+            --build=outdated"
         }  // stage
 
-        stage("OSX: Upload") {
+        stage("macOS: Upload") {
           sh "upload_conan_package.sh conanfile.py \
-                ${conan_remote} \
-                ${conan_user} \
-                ${conan_pkg_channel}"
-        }
-      }
+            ${conan_remote} \
+            ${conan_user} \
+            ${conan_pkg_channel}"
+        }  // stage
+      }  // dir
     }  // node
   }  // return
 }  // def
 
-node('docker') {
+node {
   checkout scm
 
   def builders = [:]
@@ -162,9 +165,9 @@ node('docker') {
     def image_key = x
     builders[image_key] = get_pipeline(image_key)
   }
-  builders['MocOSX'] = get_osx_pipeline()
+  builders['macOS'] = get_macos_pipeline()
   parallel builders
 
-  // Delete workspace when build is done
+  // Delete workspace when build is done.
   cleanWs()
-}  // node
+}
