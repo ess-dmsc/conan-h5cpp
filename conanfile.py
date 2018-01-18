@@ -56,7 +56,8 @@ class H5cppConan(ConanFile):
 
     def package(self):
         self.copy("*", dst="include", src="h5cpp/build/install/include")
-        self.copy("*", dst="lib", src="h5cpp/build/install/lib*")
+        self.copy("*", dst="lib", src="h5cpp/build/install/lib")
+        self.copy("*", dst="lib", src="h5cpp/build/install/lib64")
         self.copy("LICENSE.*", src="h5cpp")
 
     def package_info(self):
