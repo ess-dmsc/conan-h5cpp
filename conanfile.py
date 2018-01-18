@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     name = "h5cpp"
-    version = "packaging-test-dm2"
+    version = "packaging-test-dm3"
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
@@ -57,7 +57,7 @@ class H5cppConan(ConanFile):
     def package(self):
         self.copy("*", dst="include", src="h5cpp/build/install/include")
         self.copy("*", dst="lib", src="h5cpp/build/install/lib")
-        self.copy("*", dst="lib", src="h5cpp/build/install/lib64")
+        self.copy("*", dst="lib64", src="h5cpp/build/install/lib64")
         self.copy("LICENSE.*", src="h5cpp")
 
     def package_info(self):
