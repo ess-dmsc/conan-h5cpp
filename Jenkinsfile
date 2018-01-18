@@ -91,7 +91,7 @@ def get_pipeline(image_key) {
           sh """docker exec ${container_name} ${custom_sh} -c \"
             cd ${project}
             conan create . ${conan_user}/${conan_pkg_channel} \
-              --settings h5cpp:build_type=Release \
+              --settings h5cpp:build_type=Debug \
               --build=outdated
           \""""
         }  // stage
