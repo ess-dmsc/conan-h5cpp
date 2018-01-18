@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     name = "h5cpp"
-    version = "packaging-test-dm3"
+    version = "packaging-test-dm4"
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
@@ -62,3 +62,5 @@ class H5cppConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["h5cpp"]
+        if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
+            self.cpp_info.libdirs = ["lib64"]
