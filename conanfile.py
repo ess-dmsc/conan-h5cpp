@@ -8,7 +8,7 @@ class H5cppConan(ConanFile):
     version = "0.0.4"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    #archive_sha256 = "c45029c0a0f1a88d416af143e34de96b3091642722aa2d8c090916c6d1498c2e"
+    archive_sha256 = "b5786a0531690edb102150357cf57dca2a01653b12677228113ab57a2adb061f"
 
     name = "h5cpp"
     license = "LGPL 2.1"
@@ -21,6 +21,13 @@ class H5cppConan(ConanFile):
         "gtest/3121b20-dm2@ess-dmsc/stable"
     )
 
+    # The folder name when the *.tar.gz release is extracted
+    folder_name = "h5cpp-%s" % version
+    # The name of the archive that is downloaded from Github
+    archive_name = "%s.tar.gz" % folder_name
+    # The temporary build diirectory
+    build_dir = "./%s/build" % folder_name
+
     default_options = (
         "Boost:shared=True",
         "hdf5:shared=True",
@@ -29,15 +36,24 @@ class H5cppConan(ConanFile):
     generators = "cmake"
 
     def source(self):
-        self.run("git clone -b master --single-branch https://github.com/ess-dmsc/h5cpp.git")
+        tools.download(
+            "https://github.com/ess-dmsc/h5cpp/archive/v%s.tar.gz" % self.version,
+            self.archive_name
+        )
+        tools.check_sha256(
+            self.archive_name,
+            self.archive_sha256
+        )
+        tools.unzip(self.archive_name)
+        os.unlink(self.archive_name)
 
     def build(self):
-        files.mkdir("./h5cpp/build")
+        files.mkdir(self.build_dir)
         shutil.copyfile(
             "conanbuildinfo.cmake",
             "./h5cpp/build/conanbuildinfo.cmake"
         )
-        with tools.chdir("./h5cpp/build"):
+        with tools.chdir(self.build_dir):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
 
@@ -54,8 +70,8 @@ class H5cppConan(ConanFile):
                           "h5cpp/libh5cpp.dylib")
 
         os.rename(
-            "h5cpp/LICENSE",
-            "h5cpp/LICENSE.h5cpp"
+            "../LICENSE",
+            "../LICENSE.h5cpp"
         )
 
     def package(self):
