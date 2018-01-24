@@ -1,5 +1,5 @@
 [requires]
-h5cpp/packaging-test@ess-dmsc/testing
+h5cpp/0.0.4@ess-dmsc/testing
 
 [generators]
 cmake

@@ -5,8 +5,12 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
+    version = "0.0.4"
+    # SHA256 Checksum for this versioned release (.tar.gz)
+    # NOTE: This should be updated every time the version is updated
+    #archive_sha256 = "c45029c0a0f1a88d416af143e34de96b3091642722aa2d8c090916c6d1498c2e"
+
     name = "h5cpp"
-    version = "packaging-test-dm4"
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
@@ -46,8 +50,8 @@ class H5cppConan(ConanFile):
             os.system("make install DESTDIR=./install")
 
             if tools.os_info.is_macos:
-                os.system("install_name_tool -id '@rpath/libh5cpp_shared.dylib' "
-                          "h5cpp/libh5cpp_shared.dylib")
+                os.system("install_name_tool -id '@rpath/libh5cpp.dylib' "
+                          "h5cpp/libh5cpp.dylib")
 
         os.rename(
             "h5cpp/LICENSE",
