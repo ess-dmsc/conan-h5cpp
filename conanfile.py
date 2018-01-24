@@ -66,20 +66,16 @@ class H5cppConan(ConanFile):
             cmake.build(build_dir=".")
             os.system("make install DESTDIR=./install")
 
-            if tools.os_info.is_macos:
-                os.system("install_name_tool -id '@rpath/libh5cpp.dylib' "
-                          "h5cpp/libh5cpp.dylib")
-
-#        os.rename(
-#            "../LICENSE",
-#            "../LICENSE.h5cpp"
-#        )
+            os.rename(
+                "../LICENSE",
+                "../LICENSE.h5cpp"
+            )
 
     def package(self):
         self.copy("*", dst="include", src=self.build_dir+"/install/include")
         self.copy("*", dst="lib", src=self.build_dir+"/install/lib")
         self.copy("*", dst="lib64", src=self.build_dir+"/install/lib64")
-        self.copy("LICENSE.*", src="h5cpp")
+        self.copy("LICENSE.*", src=self.folder_name)
 
     def package_info(self):
         self.cpp_info.libs = ["h5cpp"]
