@@ -49,10 +49,10 @@ class H5cppConan(ConanFile):
 
     def build(self):
         files.mkdir(self.build_dir)
-        shutil.copyfile(
-            "conanbuildinfo.cmake",
-            "./h5cpp/build/conanbuildinfo.cmake"
-        )
+#        shutil.copyfile(
+#            "conanbuildinfo.cmake",
+#            "./h5cpp/build/conanbuildinfo.cmake"
+#        )
         with tools.chdir(self.build_dir):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
