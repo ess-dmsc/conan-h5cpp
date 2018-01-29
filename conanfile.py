@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     src_version = "0.0.4"
-    version = src_version + "-dm1"
+    version = "0.0.4-dm1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "b5786a0531690edb102150357cf57dca2a01653b12677228113ab57a2adb061f"
