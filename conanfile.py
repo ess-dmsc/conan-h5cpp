@@ -5,7 +5,8 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    version = "0.0.4"
+    src_version = "0.0.4"
+    version = src_version + "-dm1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "b5786a0531690edb102150357cf57dca2a01653b12677228113ab57a2adb061f"
@@ -15,6 +16,7 @@ class H5cppConan(ConanFile):
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
+    build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
         "Boost/1.62.0@ess-dmsc/stable",
         "hdf5/1.10.1-dm3@ess-dmsc/stable",
@@ -22,7 +24,7 @@ class H5cppConan(ConanFile):
     )
 
     # The folder name when the *.tar.gz release is extracted
-    folder_name = "h5cpp-%s" % version
+    folder_name = "h5cpp-%s" % src_version
     # The name of the archive that is downloaded from Github
     archive_name = "%s.tar.gz" % folder_name
     # The temporary build diirectory
@@ -37,7 +39,7 @@ class H5cppConan(ConanFile):
 
     def source(self):
         tools.download(
-            "https://github.com/ess-dmsc/h5cpp/archive/v%s.tar.gz" % self.version,
+            "https://github.com/ess-dmsc/h5cpp/archive/v%s.tar.gz" % self.src_version,
             self.archive_name
         )
         tools.check_sha256(

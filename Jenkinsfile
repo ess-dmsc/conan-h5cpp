@@ -2,7 +2,7 @@ project = "conan-h5cpp"
 
 conan_remote = "ess-dmsc-local"
 conan_user = "ess-dmsc"
-conan_pkg_channel = "stable"
+conan_pkg_channel = "testing"
 
 images = [
   'centos7': [
