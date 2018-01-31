@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     src_version = "0.0.4"
-    version = "0.0.4-dm1"
+    version = "0.0.4-dm2"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "b5786a0531690edb102150357cf57dca2a01653b12677228113ab57a2adb061f"
@@ -50,6 +50,14 @@ class H5cppConan(ConanFile):
         os.unlink(self.archive_name)
 
     def build(self):
+        # Workaround to find the Conan-installed version of Boost on systems
+        # with Boost 1.41 installed.
+        tools.replace_in_file(
+            "%s/cmake/BoostLibraryConfig.cmake" % self.folder_name,
+            "1.41",
+            "1.62"
+        )
+
         files.mkdir(self.build_dir)
         dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
         shutil.copyfile(
@@ -64,7 +72,8 @@ class H5cppConan(ConanFile):
                 cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
                 cmake.definitions["CMAKE_SHARED_LINKER_FLAGS"] = "-headerpad_max_install_names"
 
-            cmake.configure(source_dir="..", build_dir=".")
+            # cmake.configure(source_dir="..", build_dir=".")
+            self.run("cmake --debug-output %s %s" % ("..", cmake.command_line))
             cmake.build(build_dir=".")
             os.system("make install DESTDIR=./install")
 
