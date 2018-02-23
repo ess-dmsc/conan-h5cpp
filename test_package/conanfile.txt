@@ -1,5 +1,5 @@
 [requires]
-h5cpp/0.0.4@ess-dmsc/testing
+h5cpp/0.0.5@ess-dmsc/stable
 
 [generators]
 cmake
