@@ -19,7 +19,7 @@ class H5cppConan(ConanFile):
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
         "Boost/1.62.0@ess-dmsc/stable",
-        "hdf5/1.10.1-dm3@ess-dmsc/stable",
+        "hdf5/1.10.2@dwerder/mpienabled",
         "gtest/3121b20-dm2@ess-dmsc/stable"
     )
 
