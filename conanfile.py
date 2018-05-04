@@ -19,7 +19,7 @@ class H5cppConan(ConanFile):
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
         "Boost/1.62.0@ess-dmsc/stable",
-        "hdf5/1.10.1-dm3@ess-dmsc/stable",
+        "hdf5/1.10.2@ess-dmsc/stable",
         "gtest/3121b20-dm2@ess-dmsc/stable"
     )
 
@@ -30,12 +30,21 @@ class H5cppConan(ConanFile):
     # The temporary build diirectory
     build_dir = "./%s/build" % folder_name
 
+    options = {
+        "parallel": [True, False],
+    }
     default_options = (
+        "parallel=False",
         "Boost:shared=True",
         "hdf5:shared=True",
         "gtest:shared=True"
     )
+
     generators = "cmake"
+
+    def requirements(self):
+        if self.options.parallel:
+            self.requires('mpich/3.2.1@ess-dmsc/stable')
 
     def source(self):
         tools.download(
