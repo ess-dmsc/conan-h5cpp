@@ -5,11 +5,11 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    src_version = "0.0.6"
-    version = "0.0.6"
+    src_version = "0.0.7"
+    version = "0.0.7"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "e6ca981d9a38f30c07c336da5db43f191bfa05413e583148e11544870a5fd8d0"
+    archive_sha256 = "5a1452b77c2d01321e741860f4efe91471f1f746f022f32db140b4c3ae6e58db"
 
     name = "h5cpp"
     license = "LGPL 2.1"
@@ -19,9 +19,12 @@ class H5cppConan(ConanFile):
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
         "Boost/1.62.0@ess-dmsc/stable",
-        "hdf5/1.10.1-dm3@ess-dmsc/stable",
-        "gtest/3121b20-dm2@ess-dmsc/stable"
+        "hdf5/1.10.2-dm2@ess-dmsc/stable",
+        "gtest/3121b20-dm3@ess-dmsc/stable"
     )
+    options = {
+        "parallel": [True, False]
+    }
 
     # The folder name when the *.tar.gz release is extracted
     folder_name = "h5cpp-%s" % src_version
@@ -31,11 +34,19 @@ class H5cppConan(ConanFile):
     build_dir = "./%s/build" % folder_name
 
     default_options = (
+        "parallel=False",
         "Boost:shared=True",
         "hdf5:shared=True",
+        "hdf5:cxx=False",
         "gtest:shared=True"
     )
     generators = "cmake"
+
+    def requirements(self):
+        if self.options.parallel:
+            self.options['hdf5'].parallel = True
+        else:
+            self.options['hdf5'].parallel = False
 
     def source(self):
         tools.download(
@@ -67,6 +78,10 @@ class H5cppConan(ConanFile):
         with tools.chdir(self.build_dir):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
+            cmake.definitions["CONAN"] = "MANUAL"
+
+            if self.options.parallel:
+                cmake.definitions["WITH_MPI"] = "ON"
 
             if tools.os_info.is_macos:
                 cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
