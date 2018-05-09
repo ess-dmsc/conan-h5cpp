@@ -94,6 +94,19 @@ def get_pipeline(image_key) {
               --settings h5cpp:build_type=Debug \
               --build=outdated
           \""""
+
+          // Build parallel libraries only on CentOS.
+          if (['centos7', 'centos7-gcc6'].contains(image_key)) {
+            sh """docker exec ${container_name} ${custom_sh} -c \"
+              cd ${project}
+              CC=/usr/lib64/mpich-3.2/bin/mpicc \
+              CXX=/usr/lib64/mpich-3.2/bin/mpic++ \
+              conan create . ${conan_user}/${conan_pkg_channel} \
+                --settings h5cpp:build_type=Release \
+                --options h5cpp:parallel=True \
+                --build=outdated
+            \""""
+          }  // if
         }  // stage
 
         stage("${image_key}: Upload") {
