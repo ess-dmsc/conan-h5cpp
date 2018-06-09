@@ -109,14 +109,14 @@ def get_pipeline(image_key) {
           }  // if
         }  // stage
 
-        stage("${image_key}: Upload") {
+        /*stage("${image_key}: Upload") {
           sh """docker exec ${container_name} ${custom_sh} -c \"
             upload_conan_package.sh ${project}/conanfile.py \
               ${conan_remote} \
               ${conan_user} \
               ${conan_pkg_channel}
           \""""
-        }  // stage
+        }*/  // stage
       } finally {
         sh "docker stop ${container_name}"
         sh "docker rm -f ${container_name}"
@@ -159,12 +159,12 @@ def get_macos_pipeline() {
             --build=outdated"
         }  // stage
 
-        stage("macOS: Upload") {
+        /*stage("macOS: Upload") {
           sh "upload_conan_package.sh conanfile.py \
             ${conan_remote} \
             ${conan_user} \
             ${conan_pkg_channel}"
-        }  // stage
+        }*/  // stage
       }  // dir
     }  // node
   }  // return
