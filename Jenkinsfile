@@ -2,7 +2,9 @@ project = "conan-h5cpp"
 
 conan_remote = "ess-dmsc-local"
 conan_user = "ess-dmsc"
-conan_pkg_channel = "stable"
+conan_pkg_channel = "testing"
+
+remote_upload_node = "dontdoit"
 
 images = [
         'centos7': [
@@ -84,7 +86,7 @@ def get_pipeline(image_key) {
           \""""
 
           // Build parallel libraries only on CentOS.
-          if (['centos7', 'centos7-gcc6'].contains(image_key)) {
+          if (['centos7'].contains(image_key)) {
             sh """docker exec ${container_name} ${custom_sh} -c \"
               cd ${project}
               CC=/usr/lib64/mpich-3.2/bin/mpicc \
@@ -95,16 +97,57 @@ def get_pipeline(image_key) {
                 --build=outdated
             \""""
           }  // if
+
+          // Use shell script to avoid escaping issues
+          pkg_name_and_version = sh(
+            script: """docker exec ${container_name} ${custom_sh} -c \"
+                cd ${project} &&
+                ./get_conan_pkg_name_and_version.sh
+              \"""",
+            returnStdout: true
+          ).trim()
+
         }  // stage
 
-        /*stage("${image_key}: Upload") {
-          sh """docker exec ${container_name} ${custom_sh} -c \"
-            upload_conan_package.sh ${project}/conanfile.py \
-              ${conan_remote} \
-              ${conan_user} \
-              ${conan_pkg_channel}
-          \""""
-        }*/  // stage
+        stage("${image_key}: Local upload") {
+          /*sh """docker exec ${container_name} ${custom_sh} -c \"
+            conan upload \
+              --all \
+              ${conan_upload_flag} \
+              --remote ${conan_remote} \
+              ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}
+          \""""*/
+        }  // stage
+
+        // Upload to remote repository only once
+        if (image_key == remote_upload_node) {
+          stage("${image_key}: Remote upload") {
+            withCredentials([
+              usernamePassword(
+                credentialsId: 'cow-bot-bintray-username-and-api-key',
+                passwordVariable: 'COWBOT_PASSWORD',
+                usernameVariable: 'COWBOT_USERNAME'
+              )
+            ]) {
+              sh """docker exec ${container_name} ${custom_sh} -c \"
+                set +x
+                conan user \
+                  --password '${COWBOT_PASSWORD}' \
+                  --remote ess-dmsc \
+                  ${COWBOT_USERNAME} \
+                  > /dev/null
+              \""""
+            }  // withCredentials
+
+            sh """docker exec ${container_name} ${custom_sh} -c \"
+              conan upload \
+                ${conan_upload_flag} \
+                --remote ess-dmsc \
+                ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}
+            \""""
+          }  // stage
+        }  // if
+
       } finally {
         sh "docker stop ${container_name}"
         sh "docker rm -f ${container_name}"
@@ -143,8 +186,21 @@ def get_macos_pipeline() {
             --build=outdated"
 
           sh "conan create . ${conan_user}/${conan_pkg_channel} \
-            --settings h5cpp:build_type=Release \
+            --settings h5cpp:build_type=Debug \
             --build=outdated"
+
+          pkg_name_and_version = sh(
+            script: "./get_conan_pkg_name_and_version.sh",
+            returnStdout: true
+          ).trim()
+        }  // stage
+
+        stage("macOS: Upload") {
+          /*sh "conan upload \
+            --all \
+            ${conan_upload_flag} \
+            --remote ${conan_remote} \
+            ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}"*/
         }  // stage
 
         /*stage("macOS: Upload") {
