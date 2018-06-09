@@ -4,7 +4,7 @@ conan_remote = "ess-dmsc-local"
 conan_user = "ess-dmsc"
 conan_pkg_channel = "testing"
 
-remote_upload_node = "dontdoit"
+remote_upload_node = "centos7"
 
 images = [
         'centos7': [
@@ -110,13 +110,13 @@ def get_pipeline(image_key) {
         }  // stage
 
         stage("${image_key}: Local upload") {
-          /*sh """docker exec ${container_name} ${custom_sh} -c \"
+          sh """docker exec ${container_name} ${custom_sh} -c \"
             conan upload \
               --all \
               ${conan_upload_flag} \
               --remote ${conan_remote} \
               ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}
-          \""""*/
+          \""""
         }  // stage
 
         // Upload to remote repository only once
@@ -196,11 +196,11 @@ def get_macos_pipeline() {
         }  // stage
 
         stage("macOS: Upload") {
-          /*sh "conan upload \
+          sh "conan upload \
             --all \
             ${conan_upload_flag} \
             --remote ${conan_remote} \
-            ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}"*/
+            ${pkg_name_and_version}@${conan_user}/${conan_pkg_channel}"
         }  // stage
 
         /*stage("macOS: Upload") {
