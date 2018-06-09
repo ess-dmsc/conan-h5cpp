@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     src_version = "0.0.7"
-    version = "0.0.7"
+    version = "0.0.7-dm1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "5a1452b77c2d01321e741860f4efe91471f1f746f022f32db140b4c3ae6e58db"
@@ -18,7 +18,7 @@ class H5cppConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
-        "Boost/1.62.0@ess-dmsc/stable",
+        "Boost/1.62.0-dm1@ess-dmsc/stable",
         "hdf5/1.10.2-dm2@ess-dmsc/stable",
         "gtest/3121b20-dm3@ess-dmsc/stable"
     )
