@@ -23,6 +23,15 @@ images = [
 
 base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
+if (conan_pkg_channel == "stable") {
+  if (env.BRANCH_NAME != "master") {
+    error("Only the master branch can create a package for the stable channel")
+  }
+  conan_upload_flag = "--no-overwrite"
+} else {
+  conan_upload_flag = ""
+}
+
 def get_pipeline(image_key) {
   return {
     node('docker') {
