@@ -92,7 +92,6 @@ class H5cppConan(ConanFile):
             # cmake.configure(source_dir="..", build_dir=".")
             self.run("cmake --debug-output %s %s" % ("..", cmake.command_line))
             cmake.build(build_dir=".")
-            os.system("make install DESTDIR=./install")
 
             os.rename(
                 "../LICENSE",
@@ -100,6 +99,11 @@ class H5cppConan(ConanFile):
             )
 
     def package(self):
+        # Copy headers
+        src_path = os.path.join(self.folder_name, "src")
+        self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
+
+        # Copy libs
         if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
             self.copy(pattern="*.a", dst="lib64", src=".", keep_path=False)
             self.copy(pattern="*.so*", dst="lib64", src=".", keep_path=False)
@@ -110,7 +114,8 @@ class H5cppConan(ConanFile):
         self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
         self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.pdb", dst="bin", src=".", keep_path=False)
-        self.copy("*", dst="include", src=self.build_dir+"/install/include")
+
+        # Copy license
         self.copy("LICENSE.*", src=self.folder_name)
 
     def package_info(self):
