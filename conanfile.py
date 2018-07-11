@@ -68,7 +68,7 @@ class H5cppConan(ConanFile):
         tools.replace_in_file(
             "%s/cmake/BoostLibraryConfig.cmake" % self.folder_name,
             "1.41",
-            "1.62"
+            "1.65"
         )
 
         files.mkdir(self.build_dir)
