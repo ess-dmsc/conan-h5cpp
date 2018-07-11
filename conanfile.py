@@ -37,7 +37,8 @@ class H5cppConan(ConanFile):
 
     default_options = (
         "parallel=False",
-        "Boost:shared=True",
+        "boost_filesystem:shared=True",
+        "boost_system:shared=True",
         "hdf5:shared=True",
         "hdf5:cxx=False",
         "gtest:shared=True"
@@ -72,15 +73,15 @@ class H5cppConan(ConanFile):
         )
 
         files.mkdir(self.build_dir)
-        dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
-        shutil.copyfile(
-            "conanbuildinfo.cmake",
-            dest_file
-        )
+        #dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
+        #shutil.copyfile(
+        #    "conanbuildinfo.cmake",
+        #    dest_file
+        #)
         with tools.chdir(self.build_dir):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
-            cmake.definitions["CONAN"] = "MANUAL"
+            #cmake.definitions["CONAN"] = "MANUAL"
 
             if self.options.parallel:
                 cmake.definitions["WITH_MPI"] = "ON"
