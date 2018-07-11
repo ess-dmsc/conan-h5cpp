@@ -73,15 +73,15 @@ class H5cppConan(ConanFile):
         )
 
         files.mkdir(self.build_dir)
-        #dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
-        #shutil.copyfile(
-        #    "conanbuildinfo.cmake",
-        #    dest_file
-        #)
+        dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
+        shutil.copyfile(
+            "conanbuildinfo.cmake",
+            dest_file
+        )
         with tools.chdir(self.build_dir):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
-            #cmake.definitions["CONAN"] = "MANUAL"
+            cmake.definitions["CONAN"] = "MANUAL"
 
             if self.options.parallel:
                 cmake.definitions["WITH_MPI"] = "ON"
