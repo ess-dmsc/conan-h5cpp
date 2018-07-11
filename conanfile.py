@@ -101,9 +101,13 @@ class H5cppConan(ConanFile):
             )
 
     def package(self):
+        self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
+        self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)
+        self.copy(pattern="*.pdb", dst="bin", src=".", keep_path=False)
         self.copy("*", dst="include", src=self.build_dir+"/install/include")
-        self.copy("*", dst="lib", src=self.build_dir+"/install/lib")
-        self.copy("*", dst="lib64", src=self.build_dir+"/install/lib64")
         self.copy("LICENSE.*", src=self.folder_name)
 
     def package_info(self):
