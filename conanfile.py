@@ -5,11 +5,11 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    src_version = "0.0.7"
-    version = "0.0.7-dm1"
+    src_version = "0.0.9"
+    version = "0.0.9"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "5a1452b77c2d01321e741860f4efe91471f1f746f022f32db140b4c3ae6e58db"
+    archive_sha256 = "1fd526a715ce6873705a6980d584cd061a510aacefdcd8d013583dbdb15e0750"
 
     name = "h5cpp"
     license = "LGPL 2.1"
