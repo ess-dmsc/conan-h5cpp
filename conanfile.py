@@ -21,8 +21,7 @@ class H5cppConan(ConanFile):
         "cmake_findboost_modular/1.65.1@bincrafters/stable",
         "boost_filesystem/1.65.1@bincrafters/stable",
         "boost_system/1.65.1@bincrafters/stable",
-        "hdf5/1.10.2-dm2@ess-dmsc/stable",
-        "gtest/3121b20-dm3@ess-dmsc/stable"
+        "hdf5/1.10.2-dm2@ess-dmsc/stable"
     )
     options = {
         "parallel": [True, False]
@@ -101,10 +100,14 @@ class H5cppConan(ConanFile):
             )
 
     def package(self):
-        self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
+        if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
+            self.copy(pattern="*.a", dst="lib64", src=".", keep_path=False)
+            self.copy(pattern="*.so*", dst="lib64", src=".", keep_path=False)
+        else:
+            self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
+            self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.pdb", dst="bin", src=".", keep_path=False)
         self.copy("*", dst="include", src=self.build_dir+"/install/include")
