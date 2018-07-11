@@ -245,7 +245,6 @@ def get_win10_pipeline() {
           bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe \
             create . ${conan_user}/${conan_pkg_channel} \
             --settings h5cpp:build_type=Release \
-            --options h5cpp:shared=True \
             --build=outdated"""
         }  // stage
 
