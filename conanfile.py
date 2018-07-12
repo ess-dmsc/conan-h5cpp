@@ -92,6 +92,7 @@ class H5cppConan(ConanFile):
             # cmake.configure(source_dir="..", build_dir=".")
             self.run("cmake --debug-output %s %s" % ("..", cmake.command_line))
             cmake.build(build_dir=".")
+            cmake.build(build_dir=".",target="install",args=["--","DESTDIR=./install"])
 
             os.rename(
                 "../LICENSE",
@@ -105,17 +106,17 @@ class H5cppConan(ConanFile):
 
         # Copy libs
         if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
-            self.copy(pattern="*.a", dst="lib64", src=".", keep_path=False)
-            self.copy(pattern="*.so*", dst="lib64", src=".", keep_path=False)
-            self.copy(pattern="*.cmake", dst="lib64/cmake/h5cpp-"+self.version, src=".", keep_path=False)
+            self.copy(pattern="*.a", dst="lib64", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.so*", dst="lib64", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.cmake", dst="lib64/cmake/h5cpp-"+self.version, src=self.build_dir+"/install", keep_path=False)
         else:
-            self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
-            self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
-            self.copy(pattern="*.cmake", dst="lib/cmake/h5cpp-"+self.version, src=".", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
-        self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
-        self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)
-        self.copy(pattern="*.pdb", dst="bin", src=".", keep_path=False)
+            self.copy(pattern="*.a", dst="lib", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.so*", dst="lib", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.cmake", dst="lib/cmake/h5cpp-"+self.version, src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="*.lib", dst="lib", src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="*.dll", dst="bin", src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
 
         # Copy license
         self.copy("LICENSE.*", src=self.folder_name)
