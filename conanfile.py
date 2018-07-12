@@ -107,9 +107,11 @@ class H5cppConan(ConanFile):
         if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
             self.copy(pattern="*.a", dst="lib64", src=".", keep_path=False)
             self.copy(pattern="*.so*", dst="lib64", src=".", keep_path=False)
+            self.copy(pattern="*.cmake", dst="lib64/cmake/h5cpp-"+self.version, src=".", keep_path=False)
         else:
             self.copy(pattern="*.a", dst="lib", src=".", keep_path=False)
             self.copy(pattern="*.so*", dst="lib", src=".", keep_path=False)
+            self.copy(pattern="*.cmake", dst="lib/cmake/h5cpp-"+self.version, src=".", keep_path=False)
         self.copy(pattern="*.lib", dst="lib", src=".", keep_path=False)
         self.copy(pattern="*.dll", dst="bin", src=".", keep_path=False)
         self.copy(pattern="*.dylib*", dst="lib", src=".", keep_path=False)
