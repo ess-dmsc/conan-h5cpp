@@ -9,7 +9,7 @@ class H5cppConan(ConanFile):
     version = "0.1.0"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "670674b698506a9d552f2f9907c3813fbe802946f957b7df662ed934a7bd9cf9"
+    archive_sha256 = "c811b8954bad344e8fe62b830cc04685d21e340a6a1dcbe557f0cdd03414a7f8"
 
     name = "h5cpp"
     license = "LGPL 2.1"
