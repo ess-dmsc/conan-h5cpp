@@ -114,7 +114,7 @@ class H5cppConan(ConanFile):
             self.copy(pattern="*.so*", dst="lib", src=self.build_dir+"/install", keep_path=False)
             self.copy(pattern="*.cmake", dst="lib/cmake/h5cpp-"+self.version, src=self.build_dir+"/install", keep_path=False)
         self.copy(pattern="*.lib", dst="lib", src=self.build_dir+"/install", keep_path=False)
-        self.copy(pattern="*.dll", dst="bin", src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="., *.dll", dst="bin", src=self.build_dir+"/install", keep_path=False)
         self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
         self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
 
