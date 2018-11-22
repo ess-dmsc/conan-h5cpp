@@ -5,11 +5,12 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    src_version = "0.0.7"
-    version = "0.0.7-dm1"
+    src_version = "0.1.0"
+    version = "0.1.0-dm1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "5a1452b77c2d01321e741860f4efe91471f1f746f022f32db140b4c3ae6e58db"
+    archive_sha256 = "c811b8954bad344e8fe62b830cc04685d21e340a6a1dcbe557f0cdd03414a7f8"
+    boost_version = "1.65.1"
 
     name = "h5cpp"
     license = "LGPL 2.1"
@@ -18,8 +19,9 @@ class H5cppConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
-        "Boost/1.62.0-dm1@ess-dmsc/stable",
         "hdf5/1.10.2-dm2@ess-dmsc/stable",
+        "boost_filesystem/%s@bincrafters/stable"%boost_version,
+        "boost_system/%s@bincrafters/stable"%boost_version,
         "gtest/3121b20-dm3@ess-dmsc/stable"
     )
     options = {
@@ -35,7 +37,8 @@ class H5cppConan(ConanFile):
 
     default_options = (
         "parallel=False",
-        "Boost:shared=True",
+        "boost_filesystem:shared=True",
+        "boost_filesystem:shared=True",
         "hdf5:shared=True",
         "hdf5:cxx=False",
         "gtest:shared=True"
@@ -62,11 +65,18 @@ class H5cppConan(ConanFile):
 
     def build(self):
         # Workaround to find the Conan-installed version of Boost on systems
-        # with Boost 1.41 installed.
+        # with Boost 1.41 installed. Still useful?
         tools.replace_in_file(
             "%s/cmake/BoostLibraryConfig.cmake" % self.folder_name,
             "1.41",
-            "1.62"
+            "1.65"
+        )
+
+        # Workaround to find boost components libraries. Can be removed if the
+        # corresponding FindBoost.cmake will be introduced in h5cpp
+        tools.download(
+            "https://raw.githubusercontent.com/bincrafters/conan-cmake_findboost_modular/stable/%s/FindBoost.cmake" % self.boost_version,
+            "%s/cmake/FindBoost.cmake" % self.folder_name
         )
 
         files.mkdir(self.build_dir)
