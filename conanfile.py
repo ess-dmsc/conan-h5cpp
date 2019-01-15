@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     src_version = "0.1.0"
-    version = "0.1.0"
+    version = "0.1.0-dm1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "c811b8954bad344e8fe62b830cc04685d21e340a6a1dcbe557f0cdd03414a7f8"
@@ -105,14 +105,9 @@ class H5cppConan(ConanFile):
         self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
 
         # Copy libs
-        if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
-            self.copy(pattern="*.a", dst="lib64", src=self.build_dir+"/install", keep_path=False)
-            self.copy(pattern="*.so*", dst="lib64", src=self.build_dir+"/install", keep_path=False)
-            self.copy(pattern="*.cmake", dst="lib64/cmake/h5cpp-"+self.version, src=self.build_dir+"/install", keep_path=False)
-        else:
-            self.copy(pattern="*.a", dst="lib", src=self.build_dir+"/install", keep_path=False)
-            self.copy(pattern="*.so*", dst="lib", src=self.build_dir+"/install", keep_path=False)
-            self.copy(pattern="*.cmake", dst="lib/cmake/h5cpp-"+self.version, src=self.build_dir+"/install", keep_path=False)
+        self.copy(pattern="*.a", src=self.build_dir+"/install", keep_path=True)
+        self.copy(pattern="*.so*", src=self.build_dir+"/install", keep_path=True)
+        self.copy(pattern="*.cmake", src=self.build_dir+"/install", keep_path=True)
         self.copy(pattern="*.lib", dst="lib", src=self.build_dir+"/install", keep_path=False)
         self.copy(pattern="., *.dll", dst="bin", src=self.build_dir+"/install", keep_path=False)
         self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
