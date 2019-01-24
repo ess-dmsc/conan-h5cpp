@@ -6,7 +6,7 @@ from conans.util import files
 
 class H5cppConan(ConanFile):
     src_version = "0.1.0"
-    version = "0.1.0-dm1"
+    version = "0.1.0-dm2"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
     archive_sha256 = "c811b8954bad344e8fe62b830cc04685d21e340a6a1dcbe557f0cdd03414a7f8"
@@ -118,5 +118,3 @@ class H5cppConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["h5cpp"]
-        if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
-            self.cpp_info.libdirs = ["lib64"]
