@@ -5,11 +5,11 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    src_version = "0.1.0"
-    version = "0.1.0-dm2"
+    src_version = "0.1.1"
+    version = "0.1.1"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "c811b8954bad344e8fe62b830cc04685d21e340a6a1dcbe557f0cdd03414a7f8"
+    archive_sha256 = "49a819386ce894844b1a6aad4980d18771ecdcd0c0be2f4763174252e086c031"
 
     name = "h5cpp"
     license = "LGPL 2.1"
@@ -18,9 +18,8 @@ class H5cppConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
-        "cmake_findboost_modular/1.65.1@bincrafters/stable",
-        "boost_filesystem/1.65.1@bincrafters/stable",
-        "boost_system/1.65.1@bincrafters/stable",
+        "cmake_findboost_modular/1.69.0@bincrafters/stable",
+        "boost_filesystem/1.69.0@bincrafters/stable",
         "hdf5/1.10.2-dm2@ess-dmsc/stable"
     )
     options = {

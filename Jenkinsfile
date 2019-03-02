@@ -8,15 +8,15 @@ remote_upload_node = "centos7"
 
 images = [
         'centos7': [
-                'name': 'essdmscdm/centos7-build-node:3.5.1',
+                'name': 'essdmscdm/centos7-build-node:4.0.0',
                 'sh': '/usr/bin/scl enable devtoolset-6 -- /bin/bash -e'
         ],
         'debian9': [
-                'name': 'essdmscdm/debian9-build-node:2.5.2',
+                'name': 'essdmscdm/debian9-build-node:3.0.0',
                 'sh': 'bash -e'
         ],
         'ubuntu1804': [
-                'name': 'essdmscdm/ubuntu18.04-build-node:1.3.1',
+                'name': 'essdmscdm/ubuntu18.04-build-node:2.0.0',
                 'sh': 'bash -e'
         ]
 ]
