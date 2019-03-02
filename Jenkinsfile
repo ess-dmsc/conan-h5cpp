@@ -105,13 +105,16 @@ def get_pipeline(image_key) {
                 --options h5cpp:parallel=True \
                 --build=outdated
             \""""
+            sh """docker exec ${container_name} ${custom_sh} -c \"
+              cd ${project}
+              conan info .
+            \""""
           }  // if
 
           // Use shell script to avoid escaping issues
           pkg_name_and_version = sh(
             script: """docker exec ${container_name} ${custom_sh} -c \"
                 cd ${project}
-                conan info .
                 ./get_conan_pkg_name_and_version.sh
               \"""",
             returnStdout: true
