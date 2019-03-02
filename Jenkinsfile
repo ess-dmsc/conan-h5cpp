@@ -111,6 +111,7 @@ def get_pipeline(image_key) {
           pkg_name_and_version = sh(
             script: """docker exec ${container_name} ${custom_sh} -c \"
                 cd ${project}
+                conan info .
                 ./get_conan_pkg_name_and_version.sh
               \"""",
             returnStdout: true
@@ -198,6 +199,8 @@ def get_macos_pipeline() {
           sh "conan create . ${conan_user}/${conan_pkg_channel} \
             --settings h5cpp:build_type=Debug \
             --build=outdated"
+
+          sh "conan info ."
 
           pkg_name_and_version = sh(
             script: "./get_conan_pkg_name_and_version.sh",
