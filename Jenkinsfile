@@ -146,11 +146,6 @@ def get_win10_pipeline() {
 node {
   checkout scm
 
-  def builders = [:]
-  for (x in images.keySet()) {
-    def image_key = x
-    builders[image_key] = get_pipeline(image_key)
-  }
   builders['macOS'] = get_macos_pipeline()
   builders['windows10'] = get_win10_pipeline()
 
