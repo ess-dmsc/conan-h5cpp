@@ -110,19 +110,19 @@ def get_win10_pipeline() {
           checkout scm
         }  // stage
 
-        stage("win10: Conan setup") {
-          withCredentials([
-            string(
-              credentialsId: 'local-conan-server-password',
-              variable: 'CONAN_PASSWORD'
-            )
-          ]) {
-            bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe user \
-              --password ${CONAN_PASSWORD} \
-              --remote ${conan_remote} \
-              ${conan_user}"""
-          }  // withCredentials
-        }  // stage
+        // stage("win10: Conan setup") {
+        //   withCredentials([
+        //     string(
+        //       credentialsId: 'local-conan-server-password',
+        //       variable: 'CONAN_PASSWORD'
+        //     )
+        //   ]) {
+        //     bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe user \
+        //       --password ${CONAN_PASSWORD} \
+        //       --remote ${conan_remote} \
+        //       ${conan_user}"""
+        //   }  // withCredentials
+        // }  // stage
 
         stage("win10: Package") {
           bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe \
