@@ -90,8 +90,11 @@ class H5cppConan(ConanFile):
 
             # cmake.configure(source_dir="..", build_dir=".")
             self.run("cmake --debug-output %s %s" % ("..", cmake.command_line))
-            cmake.build(build_dir=".")
-            # cmake.build(build_dir=".",target="install",args=["--","DESTDIR=./install"])
+            if tools.os_info.is_windows:
+                cmake.build(build_dir=".")
+            else:
+                # DESTDIR is not recommended for Windows
+                cmake.build(build_dir=".",target="install",args=["--","DESTDIR=./install"])
 
             os.rename(
                 "../LICENSE",
