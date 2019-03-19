@@ -105,15 +105,16 @@ class H5cppConan(ConanFile):
         # Copy headers
         src_path = os.path.join(self.folder_name, "src")
         self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
-
-        # Copy libs
-        self.copy(pattern="*.a", src=self.build_dir+"/install", keep_path=True)
-        self.copy(pattern="*.so*", src=self.build_dir+"/install", keep_path=True)
-        self.copy(pattern="*.cmake", src=self.build_dir+"/install", keep_path=True)
-        self.copy(pattern="*.lib", dst="bin", src=self.build_dir+"/install", keep_path=False)
-        self.copy(pattern="*.dll", dst="bin", src=self.build_dir+"/install", keep_path=False)
-        self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
-        self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
+        
+        if tools.os_info.is_windows:
+            self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            self.copy(pattern="*.lib", dst="lib", keep_path=False)
+        else:
+            self.copy(pattern="*.a", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.so*", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.cmake", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
 
         # Copy license
         self.copy("LICENSE.*", src=self.folder_name)
