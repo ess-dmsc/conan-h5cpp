@@ -6,7 +6,9 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(KEEP_RPATHS)
 
 find_package(Boost COMPONENTS filesystem system REQUIRED)
-find_package(h5cpp REQUIRED)
+if (UNIX)
+  find_package(h5cpp REQUIRED)
+endif()
 
 add_executable(example example.cpp)
 target_link_libraries(example
