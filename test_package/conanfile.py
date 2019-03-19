@@ -13,6 +13,11 @@ class GtestTestConan(ConanFile):
         # in "test_package".
         cmake.configure(source_dir=self.source_folder, build_dir="./")
         cmake.build()
+        
+    def imports(self):
+        # Imports for Win32
+        self.copy("*.dll", dst="bin", src="bin")
+        self.copy("*.lib", dst="bin", src="lib")
 
     def test(self):
         os.chdir("bin")
