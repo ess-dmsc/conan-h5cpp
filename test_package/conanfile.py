@@ -18,6 +18,7 @@ class GtestTestConan(ConanFile):
         # Imports for Win32
         self.copy("*.dll", dst="bin", src="bin")
         self.copy("*.lib", dst="bin", src="bin")
+        print(os.listdir("bin"))
 
     def test(self):
         os.chdir("bin")
