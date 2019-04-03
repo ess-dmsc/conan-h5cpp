@@ -5,11 +5,11 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    src_version = "0.0.7"
-    version = "0.0.7-dm1"
+    src_version = "0.1.3"
+    version = "0.1.3"
     # SHA256 Checksum for this versioned release (.tar.gz)
     # NOTE: This should be updated every time the version is updated
-    archive_sha256 = "5a1452b77c2d01321e741860f4efe91471f1f746f022f32db140b4c3ae6e58db"
+    archive_sha256 = "bfa833263aa27a55616aa86c37521a07d424519c880759e719d5537fb15f0b6f"
 
     name = "h5cpp"
     license = "LGPL 2.1"
@@ -18,9 +18,9 @@ class H5cppConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
-        "Boost/1.62.0-dm1@ess-dmsc/stable",
-        "hdf5/1.10.2-dm2@ess-dmsc/stable",
-        "gtest/3121b20-dm3@ess-dmsc/stable"
+        "cmake_findboost_modular/1.69.0@bincrafters/stable",
+        "boost_filesystem/1.69.0@bincrafters/stable",
+        "hdf5/1.10.2-dm2@ess-dmsc/stable"
     )
     options = {
         "parallel": [True, False]
@@ -35,7 +35,8 @@ class H5cppConan(ConanFile):
 
     default_options = (
         "parallel=False",
-        "Boost:shared=True",
+        "boost_filesystem:shared=True",
+        "boost_system:shared=True",
         "hdf5:shared=True",
         "hdf5:cxx=False",
         "gtest:shared=True"
@@ -66,7 +67,7 @@ class H5cppConan(ConanFile):
         tools.replace_in_file(
             "%s/cmake/BoostLibraryConfig.cmake" % self.folder_name,
             "1.41",
-            "1.62"
+            "1.65"
         )
 
         files.mkdir(self.build_dir)
@@ -89,8 +90,11 @@ class H5cppConan(ConanFile):
 
             # cmake.configure(source_dir="..", build_dir=".")
             self.run("cmake --debug-output %s %s" % ("..", cmake.command_line))
-            cmake.build(build_dir=".")
-            os.system("make install DESTDIR=./install")
+            if tools.os_info.is_windows:
+                cmake.build(build_dir=".")
+            else:
+                # DESTDIR is not recommended for Windows
+                cmake.build(build_dir=".",target="install",args=["--","DESTDIR=./install"])
 
             os.rename(
                 "../LICENSE",
@@ -98,12 +102,22 @@ class H5cppConan(ConanFile):
             )
 
     def package(self):
-        self.copy("*", dst="include", src=self.build_dir+"/install/include")
-        self.copy("*", dst="lib", src=self.build_dir+"/install/lib")
-        self.copy("*", dst="lib64", src=self.build_dir+"/install/lib64")
+        # Copy headers
+        src_path = os.path.join(self.folder_name, "src")
+        self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
+        
+        if tools.os_info.is_windows:
+            self.copy(pattern="*.dll", dst="bin", keep_path=False)
+            self.copy(pattern="*.lib", dst="lib", keep_path=False)
+        else:
+            self.copy(pattern="*.a", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.so*", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.cmake", src=self.build_dir+"/install", keep_path=True)
+            self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
+            self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
+
+        # Copy license
         self.copy("LICENSE.*", src=self.folder_name)
 
     def package_info(self):
         self.cpp_info.libs = ["h5cpp"]
-        if tools.os_info.linux_distro == "fedora" or tools.os_info.linux_distro == "centos":
-            self.cpp_info.libdirs = ["lib64"]
