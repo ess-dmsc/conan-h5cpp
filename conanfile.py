@@ -3,15 +3,33 @@ import shutil
 from conans import ConanFile, CMake, tools
 from conans.util import files
 
+def source_release(version, sha_string):
+    archive_name = "h5cpp.tar.gz"
+    tools.download(
+        "https://github.com/ess-dmsc/h5cpp/archive/v%s.tar.gz" % version,
+        archive_name
+    )
+    tools.check_sha256(
+        archive_name,
+        sha_string
+    )
+    tools.unzip(archive_name)
+    os.remove(archive_name)
 
 class H5cppConan(ConanFile):
-    src_version = "0.1.3"
+    package_type = "test"
+    # Release (stable) pacakge
     version = "0.1.3"
-    # SHA256 Checksum for this versioned release (.tar.gz)
-    # NOTE: This should be updated every time the version is updated
     archive_sha256 = "bfa833263aa27a55616aa86c37521a07d424519c880759e719d5537fb15f0b6f"
+    
+    # Test package
+    commit = "adc451b"
+    version = commit
 
     name = "h5cpp"
+    folder_name = "h5cpp-{}".format(version)
+    if package_type == "test":
+        folder_name = name
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
@@ -25,11 +43,7 @@ class H5cppConan(ConanFile):
     options = {
         "parallel": [True, False]
     }
-
-    # The folder name when the *.tar.gz release is extracted
-    folder_name = "h5cpp-%s" % src_version
-    # The name of the archive that is downloaded from Github
-    archive_name = "%s.tar.gz" % folder_name
+    
     # The temporary build diirectory
     build_dir = "./%s/build" % folder_name
 
@@ -42,24 +56,25 @@ class H5cppConan(ConanFile):
         "gtest:shared=True"
     )
     generators = "cmake"
+    
+    def source(self):
+        if self.package_type == "release":
+            source_release(self.version, self.archive_sha256)
+        elif self.package_type == "test":
+            self.source_git(self.commit)
+            self.folder_name = "h5cpp"
+        else:
+            raise ConanInvalidConfiguration("Unknown package type: {}".format(self.package_type))
+    
+    def source_git(self, commit):
+        self.run("git clone https://github.com/ess-dmsc/h5cpp.git")
+        self.run("cd h5cpp && git checkout {}".format(commit))
 
     def requirements(self):
         if self.options.parallel:
             self.options['hdf5'].parallel = True
         else:
             self.options['hdf5'].parallel = False
-
-    def source(self):
-        tools.download(
-            "https://github.com/ess-dmsc/h5cpp/archive/v%s.tar.gz" % self.src_version,
-            self.archive_name
-        )
-        tools.check_sha256(
-            self.archive_name,
-            self.archive_sha256
-        )
-        tools.unzip(self.archive_name)
-        os.unlink(self.archive_name)
 
     def build(self):
         # Workaround to find the Conan-installed version of Boost on systems
