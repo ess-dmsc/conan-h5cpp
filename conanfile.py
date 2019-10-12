@@ -23,7 +23,7 @@ class H5cppConan(ConanFile):
     archive_sha256 = "bfa833263aa27a55616aa86c37521a07d424519c880759e719d5537fb15f0b6f"
     
     # Test package
-    commit = "adc451b"
+    commit = "e99b997"
     version = commit
 
     name = "h5cpp"
@@ -38,7 +38,7 @@ class H5cppConan(ConanFile):
     requires = (
         "cmake_findboost_modular/1.69.0@bincrafters/stable",
         "boost_filesystem/1.69.0@bincrafters/stable",
-        "hdf5/1.10.2-dm2@ess-dmsc/stable"
+        "hdf5/1.10.5-dm2@ess-dmsc/stable"
     )
     options = {
         "parallel": [True, False]
