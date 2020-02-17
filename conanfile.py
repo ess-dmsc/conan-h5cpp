@@ -17,18 +17,19 @@ def source_release(version, sha_string):
     os.remove(archive_name)
 
 class H5cppConan(ConanFile):
-    package_type = "release"
+    package_type = "test"
     # Release (stable) pacakge
     version = "0.3.3"
     archive_sha256 = "2ccae670109d605a2c26729abd2b1a98b0b5a7fe5dd98df5f03c5fe76463e1e7"
     
     # Test package
-    commit = "52965de"
+    commit = "2cfb0ad"
     #version = commit
 
     name = "h5cpp"
     folder_name = "h5cpp-{}".format(version)
     if package_type == "test":
+        version = commit
         folder_name = name
     license = "LGPL 2.1"
     url = "https://bintray.com/ess-dmsc/h5cpp"
@@ -51,8 +52,7 @@ class H5cppConan(ConanFile):
         "boost_filesystem:shared=True",
         "boost_system:shared=True",
         "hdf5:shared=True",
-        "hdf5:cxx=False",
-        "gtest:shared=True"
+        "hdf5:cxx=False"
     )
     generators = "cmake"
     
@@ -94,6 +94,7 @@ class H5cppConan(ConanFile):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
             cmake.definitions["CONAN"] = "MANUAL"
+            cmake.definitions["DISABLE_TESTS"] = "ON"
 
             if self.options.parallel:
                 cmake.definitions["WITH_MPI"] = "ON"
