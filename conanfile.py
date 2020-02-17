@@ -34,7 +34,6 @@ class H5cppConan(ConanFile):
     url = "https://bintray.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
-    build_requires = "cmake_installer/3.10.0@conan/stable"
     requires = (
         "cmake_findboost_modular/1.69.0@bincrafters/stable",
         "boost_filesystem/1.69.0@bincrafters/stable",
