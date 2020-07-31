@@ -32,7 +32,8 @@ using data_type = std::vector<int>;
 
 int main()
 {
-  file::File f = file::create("writing_vector2.h5",file::AccessFlags::TRUNCATE);
+  std::string const Filename = "writing_vector2.h5";
+  file::File f = file::create(Filename, file::AccessFlags::TRUNCATE);
   node::Group root_group = f.root();
 
   data_type data{1,2,3,4};
