@@ -23,7 +23,7 @@ class H5cppConan(ConanFile):
     archive_sha256 = "2ccae670109d605a2c26729abd2b1a98b0b5a7fe5dd98df5f03c5fe76463e1e7"
     
     # Test package
-    commit = "897cec0"
+    commit = "dc5aeda"
     #version = commit
 
     name = "h5cpp"
