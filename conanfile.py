@@ -23,7 +23,7 @@ class H5cppConan(ConanFile):
     archive_sha256 = "2ccae670109d605a2c26729abd2b1a98b0b5a7fe5dd98df5f03c5fe76463e1e7"
     
     # Test package
-    commit = "2cfb0ad"
+    commit = "dc5aeda"
     #version = commit
 
     name = "h5cpp"
@@ -36,12 +36,11 @@ class H5cppConan(ConanFile):
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
-        "cmake_findboost_modular/1.69.0@bincrafters/stable",
-        "boost_filesystem/1.69.0@bincrafters/stable",
         "hdf5/1.10.5-dm2@ess-dmsc/stable"
     )
     options = {
-        "parallel": [True, False]
+        "parallel": [True, False],
+        "with_boost": [True, False]
     }
     
     # The temporary build diirectory
@@ -49,6 +48,7 @@ class H5cppConan(ConanFile):
 
     default_options = (
         "parallel=False",
+        "with_boost=False",
         "boost_filesystem:shared=True",
         "boost_system:shared=True",
         "hdf5:shared=True",
@@ -74,6 +74,10 @@ class H5cppConan(ConanFile):
             self.options['hdf5'].parallel = True
         else:
             self.options['hdf5'].parallel = False
+            
+        if self.options.with_boost:
+            self.requires("cmake_findboost_modular/1.69.0@bincrafters/stable")
+            self.requires("boost_filesystem/1.69.0@bincrafters/stable")
 
     def build(self):
         # Workaround to find the Conan-installed version of Boost on systems
@@ -95,6 +99,11 @@ class H5cppConan(ConanFile):
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
             cmake.definitions["CONAN"] = "MANUAL"
             cmake.definitions["DISABLE_TESTS"] = "ON"
+            
+            if self.options.with_boost:
+                cmake.definitions["WITH_BOOST"] = "ON"
+            else:
+                cmake.definitions["WITH_BOOST"] = "OFF"
 
             if self.options.parallel:
                 cmake.definitions["WITH_MPI"] = "ON"

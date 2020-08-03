@@ -8,9 +8,9 @@ conan_user = "ess-dmsc"
 conan_pkg_channel = "stable"
 
 container_build_nodes = [
-  'centos': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
-  'debian': ContainerBuildNode.getDefaultContainerBuildNode('debian9'),
-  'ubuntu': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804')
+  'centos': ContainerBuildNode.getDefaultContainerBuildNode('centos7-gcc8'),
+  'debian': ContainerBuildNode.getDefaultContainerBuildNode('debian10'),
+  'ubuntu': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804-gcc8')
 ]
 
 package_builder = new ConanPackageBuilder(this, container_build_nodes, conan_pkg_channel)
@@ -20,12 +20,36 @@ builders = package_builder.createPackageBuilders { container ->
   package_builder.addConfiguration(container, [
     'settings': [
       'h5cpp:build_type': 'Release'
+    ],
+    'options': [
+      'h5cpp:with_boost': 'True'
     ]
   ])
 
   package_builder.addConfiguration(container, [
     'settings': [
       'h5cpp:build_type': 'Debug'
+    ],
+    'options': [
+      'h5cpp:with_boost': 'True'
+    ]
+  ])
+  
+  package_builder.addConfiguration(container, [
+    'settings': [
+      'h5cpp:build_type': 'Release'
+    ],
+    'options': [
+      'h5cpp:with_boost': 'False'
+    ]
+  ])
+
+  package_builder.addConfiguration(container, [
+    'settings': [
+      'h5cpp:build_type': 'Debug'
+    ],
+    'options': [
+      'h5cpp:with_boost': 'False'
     ]
   ])
 
@@ -58,10 +82,22 @@ def get_macos_pipeline() {
         stage("macOS: Package") {
           sh "conan create . ${conan_user}/${conan_pkg_channel} \
             --settings h5cpp:build_type=Release \
+            --options h5cpp:with_boost=False \
             --build=outdated"
 
           sh "conan create . ${conan_user}/${conan_pkg_channel} \
             --settings h5cpp:build_type=Debug \
+            --options h5cpp:with_boost=False \
+            --build=outdated"
+            
+          sh "conan create . ${conan_user}/${conan_pkg_channel} \
+            --settings h5cpp:build_type=Release \
+            --options h5cpp:with_boost=True \
+            --build=outdated"
+
+          sh "conan create . ${conan_user}/${conan_pkg_channel} \
+            --settings h5cpp:build_type=Debug \
+            --options h5cpp:with_boost=True \
             --build=outdated"
 
           sh "conan info ."
@@ -86,6 +122,13 @@ def get_win10_pipeline() {
             bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe \
               create . ${conan_user}/${conan_pkg_channel} \
               --settings h5cpp:build_type=Release \
+              --options h5cpp:with_boost=True \
+              --build=outdated"""
+              
+            bat """C:\\Users\\dmgroup\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\conan.exe \
+              create . ${conan_user}/${conan_pkg_channel} \
+              --settings h5cpp:build_type=Release \
+              --options h5cpp:with_boost=False \
               --build=outdated"""
           }  // stage
         }  // dir
