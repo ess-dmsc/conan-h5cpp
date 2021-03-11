@@ -17,10 +17,10 @@ def source_release(version, sha_string):
     os.remove(archive_name)
 
 class H5cppConan(ConanFile):
-    package_type = "test"
+    package_type = "release"
     # Release (stable) pacakge
-    version = "0.3.3"
-    archive_sha256 = "2ccae670109d605a2c26729abd2b1a98b0b5a7fe5dd98df5f03c5fe76463e1e7"
+    version = "0.4.0"
+    archive_sha256 = "333cd97308dcf969a98308c296ab206cb1958dee298e456a72ce078c4fd65470"
     
     # Test package
     commit = "dc5aeda"
