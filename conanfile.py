@@ -19,15 +19,15 @@ def source_release(version, sha_string):
 class H5cppConan(ConanFile):
     package_type = "release"
     # Release (stable) pacakge
-    version = "0.4.0"
+    version_number = "0.4.0"
+    version = version_number + "-dm1"
     archive_sha256 = "333cd97308dcf969a98308c296ab206cb1958dee298e456a72ce078c4fd65470"
     
     # Test package
     commit = "dc5aeda"
-    #version = commit
 
     name = "h5cpp"
-    folder_name = "h5cpp-{}".format(version)
+    folder_name = "h5cpp-{}".format(version_number)
     if package_type == "test":
         version = commit
         folder_name = name
@@ -58,7 +58,7 @@ class H5cppConan(ConanFile):
     
     def source(self):
         if self.package_type == "release":
-            source_release(self.version, self.archive_sha256)
+            source_release(self.version_number, self.archive_sha256)
         elif self.package_type == "test":
             self.source_git(self.commit)
             self.folder_name = "h5cpp"
