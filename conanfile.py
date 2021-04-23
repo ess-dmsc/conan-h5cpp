@@ -32,7 +32,7 @@ class H5cppConan(ConanFile):
         version = commit
         folder_name = name
     license = "LGPL 2.1"
-    url = "https://bintray.com/ess-dmsc/h5cpp"
+    url = "https://github.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
