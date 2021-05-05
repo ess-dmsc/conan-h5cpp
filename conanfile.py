@@ -20,7 +20,7 @@ class H5cppConan(ConanFile):
     package_type = "release"
     # Release (stable) pacakge
     version_number = "0.4.0"
-    version = version_number + "-dm1"
+    version = version_number + "-dm2"
     archive_sha256 = "333cd97308dcf969a98308c296ab206cb1958dee298e456a72ce078c4fd65470"
     
     # Test package
@@ -36,7 +36,7 @@ class H5cppConan(ConanFile):
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
-        "hdf5/1.10.5-dm2@ess-dmsc/stable"
+        "hdf5/1.10.5-dm3@ess-dmsc/stable"
     )
     options = {
         "parallel": [True, False],
