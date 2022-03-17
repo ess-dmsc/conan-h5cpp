@@ -19,9 +19,9 @@ def source_release(version, sha_string):
 class H5cppConan(ConanFile):
     package_type = "release"
     # Release (stable) pacakge
-    version_number = "0.4.0"
-    version = version_number + "-dm2"
-    archive_sha256 = "333cd97308dcf969a98308c296ab206cb1958dee298e456a72ce078c4fd65470"
+    version_number = "0.4.1"
+    version = version_number + "" #append -dm1, -dm2, ... when only recipe gets updated
+    archive_sha256 = "dd0833619fc9ef615829cfcbfaeca0694f27b3c1ca573633ee103e4c7aa92ebb"
     
     # Test package
     commit = "dc5aeda"
