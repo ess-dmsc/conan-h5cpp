@@ -50,7 +50,7 @@ There are 2 ways of doing this, depending on whether you want to create a packag
   * Download the *\*tar.gz* from the [h5cpp release page](https://github.com/ess-dmsc/h5cpp/releases) and generate the SHA-256 checksum for the file: `sha256sum v0.x.y.tar.gz` or `shasum -a 256 v0.x.y.tar.gz`. Make sure that it is the *\*tar.gz* version of the file that you create the checksum for.
   * In [conanfile.py](conanfile.py), set `archive_sha256` to the new checksum.
 * steps **only** for arbitrary commits:
-    * In [conanfile.py](conanfile.py), set `package_type` to "test".
+    * In [conanfile.py](conanfile.py), set `package_type` to "development".
     * In [conanfile.py](conanfile.py), set `commit` to the commit hash (first 7 hex letters) of the commit that you want to package
 * push and massage until the job succeeds on [Jenkins](https://jenkins.esss.dk/dm/job/ess-dmsc/job/conan-h5cpp/)
 * ideally, test new version of package with actual projects that use it
