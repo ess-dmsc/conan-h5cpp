@@ -1,56 +1,59 @@
 # conan-h5cpp
 
-Conan package for h5cpp (https://github.com/ess-dmsc/h5cpp).
+[![Build Status](https://jenkins.esss.dk/dm/job/ess-dmsc/job/conan-h5cpp/job/master/badge/icon)](https://jenkins.esss.dk/dm/job/ess-dmsc/job/conan-h5cpp/job/master/)
 
-## Updating the conan package
+Conan package for [h5cpp](https://github.com/ess-dmsc/h5cpp), a modern c++ wrapper for hdf5.
 
-For creating a new *h5cpp* package, choose the instructions based on if you have created a new release (stable) or if you want to create a test (develpoment) version.
+This repository tracks the recipe for generating the conan package. You should not have to run these steps yourself but instead simply fetch the package from the the conan remote server as described below.
 
-### Create release (stable) package
+## Using the package
 
-1. Set the variable `package_type` on line 8 of *conanfile.py* to "release".
+See the DMSC [conan-configuration repository](https://github.com/ess-dmsc/conan-configuration) for how to configure your remote.
 
-1. Edit line 10 of the *conanfile.py*-file to set the version (commit tag and release version) of the release that you want to create package for.
+In `conanfile.txt`:
 
-2. Download the *\*tar.gz* from the h5cpp release page and generate the SHA-256 checksum for the file: `shasum -a 256 v0.x.y.tar.gz`
-   *NOTE:* Make sure that it is the *\*tar.gz* version of the file that you create the checksum for.
+```
+[requires]
+h5cpp/0.4.1@ess-dmsc/stable
+...
+[options]
+h5cpp:parallel=False
+h5cpp:with_boost=False
+```
 
-3. Replace the `archive_sha256` string on line 11 of *conanfile.py* with the new checksum.
+Where:
+* `parallel` indicates if you intend to use the library with MPI
+* `with_boost` is needed if your compiler does not provide `std::filesystem`
 
+In CMake:
+```
+find_package(h5cpp 0.4.1 REQUIRED)
+...
+target_link_libraries(my_target
+  PUBLIC h5cpp::h5cpp
+)
+```
 
-3. When in the directory of the local copy of *conan-h5cpp*, execute this command:
+See [h5cpp](https://github.com/ess-dmsc/h5cpp) documentation for further details on how to use the library.
 
-	```
-	conan create . h5cpp/0.x.y@ess-dmsc/stable
-	```
-	Where **0.x.y** is the same version string as set on line 10 in the *conanfile.py*-file.
+## Updating the recipe
 
-4. Upload the new package to the relevant conan package repository by executing:
+If you are a contributor and wish to update this recipe to use the latest version of the target library.
 
-	```
-	conan upload h5cpp/0.x.y@ess-dmsc/stable --remote alias_of_repository
-	```
+There are 2 ways of doing this, depending on whether you want to create a package for a new (stable) release or if you want to create a test (development) version based on an arbitrary commit.
 
-	Where **0.x.y** is the version of the conan package as mentioned above and **alias\_of\_repository** is exactly what it says. You can list all the repositories that your local conan installation is aware of by running: `conan remote list`.
-
-### Create test package
-
-1. Set the variable `package_type` on line 8 of *conanfile.py* to "test".
-
-2. Edit line 26 of the *conanfile.py*-file to the commit hash (first 7 hex letters) of the commit that you want to package.
-
-3. When in the directory of the local copy of *conan-h5cpp*, execute this command:
-
-	```
-	conan create . h5cpp/xxxxxxx@ess-dmsc/test
-	```
-	Where **xxxxxxx** is the same commit has as set on line 10 in the *conanfile.py*-file.
-
-4. Upload the new package to the relevant conan package repository by executing:
-
-	```
-	conan upload h5cpp/xxxxxxx@ess-dmsc/test --remote alias_of_repository
-	```
-
-	Where **xxxxxxx** is once again the relevant commit hash. **alias\_of\_repository** is exactly what it says. You can list all the repositories that your local conan installation is aware of by running: `conan remote list`.
-  
+* make a branch
+* change `channel` in [Jenkinsfile](Jenkinsfile) from "stable" to "testing"
+* steps **only** for tagged release:
+  * In [conanfile.py](conanfile.py), set `package_type` to "release"
+  * In [conanfile.py](conanfile.py), set `version` to the release that you want to create a package for
+  * Download the *\*tar.gz* from the [h5cpp release page](https://github.com/ess-dmsc/h5cpp/releases) and generate the SHA-256 checksum for the file: `sha256sum v0.x.y.tar.gz` or `shasum -a 256 v0.x.y.tar.gz`. Make sure that it is the *\*tar.gz* version of the file that you create the checksum for.
+  * In [conanfile.py](conanfile.py), set `archive_sha256` to the new checksum.
+* steps **only** for arbitrary commits:
+    * In [conanfile.py](conanfile.py), set `package_type` to "test".
+    * In [conanfile.py](conanfile.py), set `commit` to the commit hash (first 7 hex letters) of the commit that you want to package
+* push and massage until the job succeeds on [Jenkins](https://jenkins.esss.dk/dm/job/ess-dmsc/job/conan-h5cpp/)
+* ideally, test new version of package with actual projects that use it
+* update the conan package name in code example, under the ["Using the package"](#using-the-package) section above
+* if this a stable release, change `channel` back to "stable" in [Jenkinsfile](Jenkinsfile) 
+* make a merge request

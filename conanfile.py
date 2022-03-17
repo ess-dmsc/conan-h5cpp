@@ -18,17 +18,20 @@ def source_release(version, sha_string):
 
 class H5cppConan(ConanFile):
     package_type = "release"
-    # Release (stable) pacakge
+    # Release (stable) package
+    # The following lines are used if `package_type` above was set to "release"
     version_number = "0.4.1"
-    version = version_number + "" #append -dm1, -dm2, ... when only recipe gets updated
+    version_suffix = "" #use "-dm1", "-dm2", etc.. when only the recipe gets updated
+    version = version_number + version_suffix
     archive_sha256 = "dd0833619fc9ef615829cfcbfaeca0694f27b3c1ca573633ee103e4c7aa92ebb"
     
-    # Test package
+    # Development package
+    # The following is used if `package_type` above was set to "development"
     commit = "dc5aeda"
 
     name = "h5cpp"
     folder_name = "h5cpp-{}".format(version_number)
-    if package_type == "test":
+    if package_type == "development":
         version = commit
         folder_name = name
     license = "LGPL 2.1"
@@ -59,7 +62,7 @@ class H5cppConan(ConanFile):
     def source(self):
         if self.package_type == "release":
             source_release(self.version_number, self.archive_sha256)
-        elif self.package_type == "test":
+        elif self.package_type == "development":
             self.source_git(self.commit)
             self.folder_name = "h5cpp"
         else:
