@@ -17,7 +17,8 @@ def source_release(version, sha_string):
     os.remove(archive_name)
 
 class H5cppConan(ConanFile):
-    package_type = "release"
+    package_type = "release" # "release" or "development"
+
     # Release (stable) package
     # The following lines are used if `package_type` above was set to "release"
     version_number = "0.4.1"
