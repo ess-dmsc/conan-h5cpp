@@ -36,7 +36,7 @@ class H5cppConan(ConanFile):
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
-        "hdf5/1.10.5-dm3@ess-dmsc/stable"
+        "hdf5/1.12.1@ess-dmsc/stable"
     )
     options = {
         "parallel": [True, False],
