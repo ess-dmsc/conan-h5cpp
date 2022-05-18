@@ -17,7 +17,8 @@ if (WIN32)
   target_link_libraries(example
   PRIVATE ${CONAN_LIBS})
 else()
+  find_package(hdf5 REQUIRED)
   find_package(h5cpp REQUIRED)
   target_link_libraries(example
-  PRIVATE h5cpp)
+  PRIVATE h5cpp::h5cpp hdf5::hdf5)
 endif()

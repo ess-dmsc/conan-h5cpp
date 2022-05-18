@@ -21,10 +21,10 @@ class H5cppConan(ConanFile):
 
     # Release (stable) package
     # The following lines are used if `package_type` above was set to "release"
-    version_number = "0.4.1"
+    version_number = "0.5.0"
     version_suffix = "" #use "-dm1", "-dm2", etc.. when only the recipe gets updated
     version = version_number + version_suffix
-    archive_sha256 = "dd0833619fc9ef615829cfcbfaeca0694f27b3c1ca573633ee103e4c7aa92ebb"
+    archive_sha256 = "e97fc0c4719c47e694e16aaf34b75d52c4a232bd2d98a96c1b8ed8c37de07da6"
     
     # Development package
     # The following is used if `package_type` above was set to "development"
@@ -84,14 +84,6 @@ class H5cppConan(ConanFile):
             self.requires("boost_filesystem/1.69.0@bincrafters/stable")
 
     def build(self):
-        # Workaround to find the Conan-installed version of Boost on systems
-        # with Boost 1.41 installed.
-        tools.replace_in_file(
-            "%s/cmake/BoostLibraryConfig.cmake" % self.folder_name,
-            "1.41",
-            "1.65"
-        )
-
         files.mkdir(self.build_dir)
         dest_file = "%s/conanbuildinfo.cmake" % self.build_dir
         shutil.copyfile(
@@ -102,12 +94,12 @@ class H5cppConan(ConanFile):
             cmake = CMake(self)
             cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
             cmake.definitions["CONAN"] = "MANUAL"
-            cmake.definitions["DISABLE_TESTS"] = "ON"
+            cmake.definitions["H5CPP_DISABLE_TESTS"] = "ON"
             
             if self.options.with_boost:
-                cmake.definitions["WITH_BOOST"] = "ON"
+                cmake.definitions["H5CPP_WITH_BOOST"] = "ON"
             else:
-                cmake.definitions["WITH_BOOST"] = "OFF"
+                cmake.definitions["H5CPP_WITH_BOOST"] = "OFF"
 
             if self.options.parallel:
                 cmake.definitions["WITH_MPI"] = "ON"
