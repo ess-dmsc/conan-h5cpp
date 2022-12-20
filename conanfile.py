@@ -37,7 +37,6 @@ class H5cppConan(ConanFile):
 
     def source(self):
         self.source_git(self.commit)
-        self.folder_name = "h5cpp"
 
     def source_git(self, commit):
         self.run("git clone https://github.com/ess-dmsc/h5cpp.git")
@@ -91,8 +90,10 @@ class H5cppConan(ConanFile):
             )
 
     def package(self):
+        folder_name = "h5cpp"
+
         # Copy headers
-        src_path = os.path.join(self.folder_name, "src")
+        src_path = os.path.join(folder_name, "src")
         self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
 
         if tools.os_info.is_windows:
@@ -106,7 +107,7 @@ class H5cppConan(ConanFile):
             self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
 
         # Copy license
-        self.copy("LICENSE.*", src=self.folder_name)
+        self.copy("LICENSE.*", src=folder_name)
 
     def package_info(self):
         self.cpp_info.libs = ["h5cpp"]
