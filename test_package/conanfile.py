@@ -4,7 +4,7 @@ import os
 
 class H5cppTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "cmake, cmake_find_package"
+    generators = "cmake", "cmake_find_package"
     options = {
         "with_boost": [True, False]
     }
