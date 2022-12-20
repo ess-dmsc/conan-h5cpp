@@ -52,22 +52,6 @@ builders = package_builder.createPackageBuilders { container ->
       'h5cpp:with_boost': 'False'
     ]
   ])
-
-  // Build parallel libraries only on CentOS.
-  if (container.key == 'centos') {
-    package_builder.addConfiguration(container, [
-      'settings': [
-        'h5cpp:build_type': 'Release'
-      ],
-      'options': [
-        'h5cpp:parallel': "True"
-      ],
-      'env': [
-        'CC': '/usr/lib64/mpich-3.2/bin/mpicc',
-        'CXX': '/usr/lib64/mpich-3.2/bin/mpic++'
-      ]
-    ])
-  }
 }
 
 def get_macos_pipeline() {
