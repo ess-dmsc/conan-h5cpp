@@ -71,7 +71,7 @@ class H5cppConan(ConanFile):
                 cmake.definitions["H5CPP_WITH_BOOST"] = "OFF"
 
             if self.options.parallel:
-                cmake.definitions["WITH_MPI"] = "ON"
+                cmake.definitions["H5CPP_WITH_MPI"] = "ON"
 
             if tools.os_info.is_macos:
                 cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
