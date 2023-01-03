@@ -33,7 +33,7 @@ class H5cppConan(ConanFile):
         "hdf5:szip_support=with_libaec",
         "hdf5:szip_encoding=True"
     )
-    generators = "cmake"
+    generators = "cmake", "cmake_find_package"
 
     def source(self):
         self.source_git(self.commit)
@@ -50,6 +50,7 @@ class H5cppConan(ConanFile):
 
         if self.options.with_boost:
             self.requires("boost/1.77.0")
+            self.requires("zlib/1.2.13")
 
     def build(self):
         files.mkdir(self.build_dir)
