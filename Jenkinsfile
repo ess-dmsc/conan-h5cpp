@@ -93,6 +93,11 @@ def get_macos_pipeline() {
             --options h5cpp:with_boost=True \
             --build=outdated"
 
+          sh "conan create . ${conan_user}/${conan_pkg_channel} \
+            --settings h5cpp:build_type=Debug \
+            --options h5cpp:parallel=True \
+            --build=outdated"
+
           sh "conan info ."
         }  // stage
       }  // dir
