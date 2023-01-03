@@ -33,7 +33,7 @@ class H5cppConan(ConanFile):
         "hdf5:szip_support=with_libaec",
         "hdf5:szip_encoding=True"
     )
-    generators = "cmake", "cmake_find_package"
+    generators = "cmake", "cmake_find_package", "virtualbuildenv"
 
     def source(self):
         self.source_git(self.commit)
