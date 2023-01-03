@@ -5,7 +5,7 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    commit = "95f0e70"
+    commit = "v0.5.2"
 
     name = "h5cpp"
     version = commit
@@ -49,8 +49,7 @@ class H5cppConan(ConanFile):
             self.options['hdf5'].parallel = False
 
         if self.options.with_boost:
-            self.requires("cmake_findboost_modular/1.69.0@bincrafters/stable")
-            self.requires("boost_filesystem/1.69.0@bincrafters/stable")
+            self.requires("boost/1.77.0")
 
     def build(self):
         files.mkdir(self.build_dir)
