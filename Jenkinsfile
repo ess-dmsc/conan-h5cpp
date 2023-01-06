@@ -52,15 +52,6 @@ builders = package_builder.createPackageBuilders { container ->
       'h5cpp:with_boost': 'False'
     ]
   ])
-
-  package_builder.addConfiguration(container, [
-    'settings': [
-      'h5cpp:build_type': 'Release'
-    ],
-    'options': [
-      'h5cpp:parallel': 'True'
-    ]
-  ])
 }
 
 def get_macos_pipeline() {
@@ -91,11 +82,6 @@ def get_macos_pipeline() {
           sh "conan create . ${conan_user}/${conan_pkg_channel} \
             --settings h5cpp:build_type=Debug \
             --options h5cpp:with_boost=True \
-            --build=outdated"
-
-          sh "conan create . ${conan_user}/${conan_pkg_channel} \
-            --settings h5cpp:build_type=Debug \
-            --options h5cpp:parallel=True \
             --build=outdated"
 
           sh "conan info ."
