@@ -8,7 +8,7 @@ class H5cppConan(ConanFile):
     commit = "v0.5.2"
 
     name = "h5cpp"
-    version = commit
+    version = "0.5.2"
     license = "LGPL 2.1"
     url = "https://github.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
