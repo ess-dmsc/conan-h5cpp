@@ -5,7 +5,7 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    commit = "95f0e70"
+    commit = "v0.5.2"
 
     name = "h5cpp"
     version = commit
@@ -17,7 +17,6 @@ class H5cppConan(ConanFile):
         "hdf5/1.12.2"
     )
     options = {
-        "parallel": [True, False],
         "with_boost": [True, False]
     }
 
@@ -25,7 +24,6 @@ class H5cppConan(ConanFile):
     build_dir = f"./{name}/build"
 
     default_options = (
-        "parallel=False",
         "with_boost=False",
         "boost_filesystem:shared=True",
         "boost_system:shared=True",
@@ -33,7 +31,7 @@ class H5cppConan(ConanFile):
         "hdf5:szip_support=with_libaec",
         "hdf5:szip_encoding=True"
     )
-    generators = "cmake"
+    generators = "cmake", "cmake_find_package", "virtualbuildenv"
 
     def source(self):
         self.source_git(self.commit)
@@ -43,14 +41,9 @@ class H5cppConan(ConanFile):
         self.run("cd h5cpp && git checkout {}".format(commit))
 
     def requirements(self):
-        if self.options.parallel:
-            self.options['hdf5'].parallel = True
-        else:
-            self.options['hdf5'].parallel = False
-
         if self.options.with_boost:
-            self.requires("cmake_findboost_modular/1.69.0@bincrafters/stable")
-            self.requires("boost_filesystem/1.69.0@bincrafters/stable")
+            self.requires("boost/1.77.0")
+            self.requires("zlib/1.2.13")
 
     def build(self):
         files.mkdir(self.build_dir)
@@ -69,9 +62,6 @@ class H5cppConan(ConanFile):
                 cmake.definitions["H5CPP_WITH_BOOST"] = "ON"
             else:
                 cmake.definitions["H5CPP_WITH_BOOST"] = "OFF"
-
-            if self.options.parallel:
-                cmake.definitions["WITH_MPI"] = "ON"
 
             if tools.os_info.is_macos:
                 cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
