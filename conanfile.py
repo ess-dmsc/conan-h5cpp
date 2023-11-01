@@ -5,16 +5,16 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    commit = "v0.5.2"
+    commit = "v0.6.0"
 
     name = "h5cpp"
-    version = "0.5.2"
+    version = "0.6.0"
     license = "LGPL 2.1"
     url = "https://github.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
-        "hdf5/1.12.2"
+        "hdf5/1.14.1",
     )
     options = {
         "with_boost": [True, False]
@@ -25,8 +25,6 @@ class H5cppConan(ConanFile):
 
     default_options = (
         "with_boost=False",
-        "boost_filesystem:shared=True",
-        "boost_system:shared=True",
         "hdf5:enable_cxx=False",
         "hdf5:szip_support=with_libaec",
         "hdf5:szip_encoding=True"
@@ -42,7 +40,7 @@ class H5cppConan(ConanFile):
 
     def requirements(self):
         if self.options.with_boost:
-            self.requires("boost/1.77.0")
+            self.requires("boost/1.81.0")
             self.requires("zlib/1.2.13")
 
     def build(self):
