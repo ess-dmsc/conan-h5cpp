@@ -15,7 +15,6 @@ class H5cppConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = (
         "hdf5/1.14.1",
-        "zlib/1.2.13"
     )
     options = {
         "with_boost": [True, False]
