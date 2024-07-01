@@ -5,10 +5,10 @@ from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    commit = "v0.6.0"
+    commit = "9486a26"
 
     name = "h5cpp"
-    version = "0.6.0"
+    version = "9486a26"
     license = "LGPL 2.1"
     url = "https://github.com/ess-dmsc/h5cpp"
     description = "h5cpp wrapper"
