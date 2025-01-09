@@ -42,7 +42,19 @@ container_build_node:
         setup_conan "$CONAN_EXTERNAL_NAME" "$CONAN_EXTERNAL_URL"
         setup_conan "$CONAN_RELEASE_NAME" "$CONAN_RELEASE_URL"
         
-        conan_package_creation "."
+        # Configurations for Conan package creation
+        configurations=(
+          "settings=(\"h5cpp:build_type=Release\") options=(\"h5cpp:with_boost=True\")"
+          "settings=(\"h5cpp:build_type=Debug\") options=(\"h5cpp:with_boost=True\")"
+          "settings=(\"h5cpp:build_type=Release\") options=(\"h5cpp:with_boost=False\")"
+          "settings=(\"h5cpp:build_type=Debug\") options=(\"h5cpp:with_boost=False\")"
+        )
+        
+        # Create a Conan Package for each configuration
+        for config in "${configurations[@]}"; do
+          eval "$config"
+          conan_package_creation "." "${settings[@]}" "${options[@]}"
+        done
 
         # Upload conan packages
         # if [[ "$CI_COMMIT_REF_NAME" != "master" ]]; then
