@@ -1,0 +1,4 @@
+sources:
+  "0.6.2":
+    url:    "https://github.com/ess-dmsc/h5cpp"
+    commit: "3afccf2894e3695e24f1c334c1bf322dba79a74b"

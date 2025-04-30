@@ -1,101 +1,67 @@
-import os
-import shutil
 from conans import ConanFile, CMake, tools
-from conans.util import files
 
 
 class H5cppConan(ConanFile):
-    commit = "9486a26"
+    """Conan recipe for *h5cpp* """
 
-    name = "h5cpp"
-    version = "9486a26"
-    license = "LGPL 2.1"
-    url = "https://github.com/ess-dmsc/h5cpp"
-    description = "h5cpp wrapper"
-    settings = "os", "compiler", "build_type", "arch"
-    requires = (
-        "hdf5/1.14.1",
-    )
-    options = {
-        "with_boost": [True, False]
+    name            = "h5cpp"
+    version         = "0.6.2"
+    license         = "LGPL-2.1-or-later"
+    url             = "https://github.com/ess-dmsc/h5cpp"
+    description     = "Cpp wrapper for the HDF5 C API"
+
+    revision_mode   = "scm"
+
+    settings        = "os", "compiler", "build_type", "arch"
+    options         = {"with_boost": [True, False]}
+    default_options = {
+        "with_boost": False,
+        # propagated options for dependencies
+        "hdf5:enable_cxx": False,
+        "hdf5:szip_support": "with_libaec",
+        "hdf5:szip_encoding": True,
     }
 
-    # The temporary build diirectory
-    build_dir = f"./{name}/build"
+    generators      = "cmake", "cmake_find_package"
+    no_copy_source  = True
 
-    default_options = (
-        "with_boost=False",
-        "hdf5:enable_cxx=False",
-        "hdf5:szip_support=with_libaec",
-        "hdf5:szip_encoding=True"
-    )
-    generators = "cmake", "cmake_find_package", "virtualbuildenv"
+    _source_subfolder = "source"
 
     def source(self):
-        self.source_git(self.commit)
-
-    def source_git(self, commit):
-        self.run("git clone https://github.com/ess-dmsc/h5cpp.git")
-        self.run("cd h5cpp && git checkout {}".format(commit))
+        data = self.conan_data["sources"][self.version]
+        repo = tools.Git(folder=self._source_subfolder)
+        repo.clone(data["url"], "master")
+        with tools.chdir(self._source_subfolder):
+            self.run(f"git checkout {data['commit']}")
 
     def requirements(self):
+        self.requires("hdf5/1.14.1")
         if self.options.with_boost:
             self.requires("boost/1.81.0")
             self.requires("zlib/1.2.13")
 
+    def _configure_cmake(self):
+        if hasattr(self, "_cmake"):
+            return self._cmake
+
+        cmake = CMake(self)
+        cmake.definitions.update({
+            "CMAKE_INSTALL_PREFIX": self.package_folder.replace("\\", "/"),
+            "H5CPP_DISABLE_TESTS": "ON",
+            "H5CPP_WITH_BOOST": "ON" if self.options.with_boost else "OFF",
+        })
+        cmake.configure(source_folder=self._source_subfolder)
+        self._cmake = cmake
+        return cmake
+
     def build(self):
-        files.mkdir(self.build_dir)
-        dest_file = f"{self.build_dir}/conanbuildinfo.cmake"
-        shutil.copyfile(
-            "conanbuildinfo.cmake",
-            dest_file
-        )
-        with tools.chdir(self.build_dir):
-            cmake = CMake(self)
-            cmake.definitions["CMAKE_INSTALL_PREFIX"] = ""
-            cmake.definitions["CONAN"] = "MANUAL"
-            cmake.definitions["H5CPP_DISABLE_TESTS"] = "ON"
-
-            if self.options.with_boost:
-                cmake.definitions["H5CPP_WITH_BOOST"] = "ON"
-            else:
-                cmake.definitions["H5CPP_WITH_BOOST"] = "OFF"
-
-            if tools.os_info.is_macos:
-                cmake.definitions["CMAKE_MACOSX_RPATH"] = "ON"
-                cmake.definitions["CMAKE_SHARED_LINKER_FLAGS"] = "-headerpad_max_install_names"
-
-            self.run(f"cmake --debug-output .. {cmake.command_line}")
-            if tools.os_info.is_windows:
-                cmake.build(build_dir=".")
-            else:
-                # DESTDIR is not recommended for Windows
-                cmake.build(build_dir=".", target="install", args=["--", "DESTDIR=./install"])
-
-            os.rename(
-                "../LICENSE",
-                "../LICENSE.h5cpp"
-            )
+        cmake = self._configure_cmake()
+        cmake.build()
+        cmake.install()
 
     def package(self):
-        folder_name = "h5cpp"
-
-        # Copy headers
-        src_path = os.path.join(folder_name, "src")
-        self.copy(pattern="*.hpp", dst="include", src=src_path, keep_path=True)
-
-        if tools.os_info.is_windows:
-            self.copy(pattern="*.dll", dst="bin", keep_path=False)
-            self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        else:
-            self.copy(pattern="*.a", src=self.build_dir+"/install", keep_path=True)
-            self.copy(pattern="*.so*", src=self.build_dir+"/install", keep_path=True)
-            self.copy(pattern="*.cmake", src=self.build_dir+"/install", keep_path=True)
-            self.copy(pattern="*.dylib*", dst="lib", src=self.build_dir+"/install", keep_path=False)
-            self.copy(pattern="*.pdb", dst="bin", src=self.build_dir+"/install", keep_path=False)
-
-        # Copy license
-        self.copy("LICENSE.*", src=folder_name)
+        # Install step already populated *self.package_folder*; just copy licence.
+        self.copy("LICENSE*", dst="licenses", src=self._source_subfolder)
 
     def package_info(self):
-        self.cpp_info.libs = ["h5cpp"]
+        self.cpp_info.libs = tools.collect_libs(self)
