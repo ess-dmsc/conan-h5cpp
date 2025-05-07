@@ -1,78 +1,55 @@
+default:
+  tags:
+    - docker
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
 stages:
-  - container_build_node
+  - build
+  - publish
 
 variables:
-  CONAN_USER: "ess-dmsc"
-  CONAN_PKG_CHANNEL: "stable"
-  PROJECT_NAME: "conan-h5cpp"
-  TARGET_CONTAINER_UPLOAD_REMOTE: "centos7-gcc11"
-  CONAN_EXTERNAL_NAME: "ecdc-conan-external"
-  CONAN_EXTERNAL_URL: "https://artifactory.esss.lu.se/artifactory/api/conan/ecdc-conan-external"
-  CONAN_RELEASE_NAME: "ecdc-conan-release"
-  CONAN_RELEASE_URL: "https://artifactory.esss.lu.se/artifactory/api/conan/ecdc-conan-release"
+  ALMALINUX9_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-almalinux9-conan:1.2.0"
+  CENTOS7_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-centos7-conan:1.0.0"
+  CONAN_USER_HOME: "$CI_PROJECT_DIR"
+  CONAN_CONFIG_REPO: "http://github.com/ess-dmsc/conan-configuration.git"
+  CONAN_REMOTE: "ecdc-conan-virtual"
 
-# Container Build Node Stage so the Conan package can be built for all platforms
-container_build_node:
-  stage: container_build_node
-  tags:
-    - dc-zone
-    - docker
-  parallel:
-    matrix:
-      - CONTAINER: "centos7-gcc11"
-        IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-centos7-build-node:12.3.0"
-        SHELL: "/usr/bin/scl enable devtoolset-11 rh-python38 -- /bin/bash -e -x"
-      - CONTAINER: "almalinux8-gcc12"
-        IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-almalinux8-build-node:1.1.0"
-        SHELL: "/usr/bin/scl enable gcc-toolset-12 -- /bin/bash -e -x"
-      - CONTAINER: "debian11"
-        IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-debian11-build-node:5.2.0"
-        SHELL: "bash -e -x"
-      - CONTAINER: "ubuntu2204"
-        IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-ubuntu2204-build-node:5.0.0"
-        SHELL: "bash -e -x"
-  image: $IMAGE
+build_centos7:
+  stage: build
+  image: $CENTOS7_IMAGE
   script:
-    - echo "Starting build job for $PROJECT_NAME on $CONTAINER"
-    - |
-      $SHELL <<'EOF'
-        # Sourcing GitLab CI functions
-        source .ci_functions.sh
+    - conan config install $CONAN_CONFIG_REPO
+    - conan create . ess-dmsc/stable --build=missing --build=hdf5 -pr=linux_x86_64_gcc11_legacy
+  artifacts:
+    paths:
+      - .conan
+    expire_in: 1 day
 
-        setup_conan "$CONAN_EXTERNAL_NAME" "$CONAN_EXTERNAL_URL"
-        setup_conan "$CONAN_RELEASE_NAME" "$CONAN_RELEASE_URL"
-        
-        # Configurations for Conan package creation
-        configurations=(
-          "settings=(\"h5cpp:build_type=Release\") options=(\"h5cpp:with_boost=True\")"
-          "settings=(\"h5cpp:build_type=Debug\") options=(\"h5cpp:with_boost=True\")"
-          "settings=(\"h5cpp:build_type=Release\") options=(\"h5cpp:with_boost=False\")"
-          "settings=(\"h5cpp:build_type=Debug\") options=(\"h5cpp:with_boost=False\")"
-        )
-        
-        # Create a Conan Package for each configuration
-        for config in "${configurations[@]}"; do
-          eval "$config"
-          conan_package_creation "." "${settings[@]}" "${options[@]}"
-        done
+build_almalinux9:
+  stage: build
+  image: $ALMALINUX9_IMAGE
+  script:
+    - conan config install $CONAN_CONFIG_REPO
+    - conan create . ess-dmsc/stable --build=missing -pr=linux_x86_64_gcc11
+  artifacts:
+    paths:
+      - .conan
+    expire_in: 1 day
 
-        # Upload conan packages
-        if [[ "$CI_COMMIT_REF_NAME" != "master" ]]; then
-          echo "Skipping upload stage: only the master branch can upload to the stable channel"
-        else
-          # Upload to Conan packages to Conan-External
-          upload_packages_to_conan_external "."
-
-          # Upload Conan packages to Conan-Release if this is ther target container
-          if [[ "$CONTAINER" == "$TARGET_CONTAINER_UPLOAD_REMOTE" ]]; then
-            upload_packages_to_conan_release "."
-          fi
-        fi
-      EOF
+publish:
+  stage: publish
+  image: $ALMALINUX9_IMAGE
+  script:
+    - conan config install $CONAN_CONFIG_REPO
+    - conan user $ESS_ARTIFACTORY_ECDC_CONAN_USER --remote=$CONAN_REMOTE --password=$ESS_ARTIFACTORY_ECDC_CONAN_TOKEN
+    - conan upload h5cpp --all -r=$CONAN_REMOTE --confirm
   rules:
-    # Automatically trigger on merge request pipelines with new commits
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    # Automatically trigger when the merge request is merged
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"'
-    # Allow manual execution in other scenarios
-    - when: manual
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - build_centos7
+    - build_almalinux9
