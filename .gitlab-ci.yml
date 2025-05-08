@@ -41,7 +41,7 @@ build_almalinux9:
       - .conan
     expire_in: 1 day
 
-publish:
+publish_centos7:
   stage: publish
   image: $ALMALINUX9_IMAGE
   script:
@@ -52,4 +52,15 @@ publish:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   needs:
     - build_centos7
+
+publish_almalinux9:
+  stage: publish
+  image: $ALMALINUX9_IMAGE
+  script:
+    - conan config install $CONAN_CONFIG_REPO
+    - conan user $ESS_ARTIFACTORY_ECDC_CONAN_USER --remote=$CONAN_REMOTE --password=$ESS_ARTIFACTORY_ECDC_CONAN_TOKEN
+    - conan upload h5cpp --all -r=$CONAN_REMOTE --confirm
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
     - build_almalinux9
