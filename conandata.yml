@@ -1,7 +1,7 @@
 sources:
   "0.8.0":
     url: "https://github.com/ess-dmsc/h5cpp/archive/refs/tags/v0.8.0.tar.gz"
-    sha256: "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+    sha256: "cc0bb662c2eb5abc10185ccd86e3a7f68aa2463f02a8ecef570a1c9de508f87b"
   "0.7.1":
     url: "https://github.com/ess-dmsc/h5cpp/archive/refs/tags/v0.7.1.tar.gz"
     sha256: "e832fb729aaf328d0f30b34e577645f33fdaccda0e1b0c06cb9a3d412a728ad3"
