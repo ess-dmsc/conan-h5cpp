@@ -2,7 +2,6 @@
 
 This repository contains a [Conan](https://conan.io/) recipe for packaging [h5cpp](https://github.com/ess-dmsc/h5cpp), a modern C++ wrapper for the HDF5 C library.
 
-
 ## Creating a New Conan Package Release
 
 When a new `h5cpp` release is published on [GitHub Releases](https://github.com/ess-dmsc/h5cpp/releases):
@@ -27,6 +26,7 @@ Submit your changes via a merge request. This will trigger a CI pipeline to test
 **Note:** The package won't be uploaded to the remote yet.
 
 Once the MR is merged, a second pipeline will:
+
 - Create the package
 - Upload it to the ECDC Conan remote
 - Done!
@@ -57,7 +57,7 @@ To inspect the generated package:
 
 ```bash
 conan search h5cpp
-conan info h5cpp/0.7.1@ess-dmsc/testing -pr=linux_x86_64_gcc11
+conan info h5cpp/0.8.0@ess-dmsc/testing -pr=linux_x86_64_gcc11
 ```
 
 ---
