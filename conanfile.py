@@ -6,7 +6,7 @@ from conan.tools.env import VirtualBuildEnv, VirtualRunEnv
 
 class H5CppConan(ConanFile):
     name = "h5cpp"
-    version = "0.7.1"
+    version = "0.8.0"
     license = "LGPL-2.1"
     url = "https://github.com/ess-dmsc/h5cpp"
     description = "C++ wrapper for the HDF5 C-library"
